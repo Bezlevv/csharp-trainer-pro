@@ -1,0 +1,30 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build module 13 (unit testing demo)
+        run: dotnet build modules/13-unit-testing/xunit-demo/Calculator.slnx --configuration Release
+
+      - name: Test module 13
+        run: dotnet test modules/13-unit-testing/xunit-demo/Calculator.slnx --configuration Release --no-build
+
+      - name: Build module 15 (final project)
+        run: dotnet build modules/15-final-project/task-tracker/TaskTracker.slnx --configuration Release
+
+      - name: Test module 15
+        run: dotnet test modules/15-final-project/task-tracker/TaskTracker.slnx --configuration Release --no-build

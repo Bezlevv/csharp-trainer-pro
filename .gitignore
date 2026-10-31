@@ -1,0 +1,36 @@
+# Результаты сборки .NET
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+artifacts/
+
+# Пакеты NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+
+# Файлы пользователя IDE
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+.idea/
+*.DotSettings.user
+
+# Тестовое покрытие
+coverage*.json
+coverage*.xml
+*.coverage
+*.coveragexml
+
+# Локальные файлы
+*.log
+tasks.json.tmp
+appsettings.*.local.json
+
+# Данные приложений (runtime)
+data/
