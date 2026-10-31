@@ -24,7 +24,7 @@
 
 > 🗺️ **Есть полная дорожная карта:** [ROADMAP.md](ROADMAP.md) — пошаговый план от нуля до Senior с теорией «как для ребёнка», задачами, подсказками и чек-поинтами.
 >
-> 📖 **Развёрнутые уроки с тестами:** [`lessons/level0/`](lessons/level0/), [`lessons/level1/`](lessons/level1/), [`lessons/level2/`](lessons/level2/) и [`lessons/level3/`](lessons/level3/) — Уровни 0–3 (с нуля до Middle): теория с нуля, практика и проверочные тесты с объяснением каждого ответа.
+> 📖 **Развёрнутые уроки с тестами:** [`lessons/level0/`](lessons/level0/), [`lessons/level1/`](lessons/level1/), [`lessons/level2/`](lessons/level2/), [`lessons/level3/`](lessons/level3/) и [`lessons/level4/`](lessons/level4/) — полный путь от нуля до Senior: теория с нуля, практика и проверочные тесты с объяснением каждого ответа.
 
 На каждый модуль отводится 3–7 дней. Алгоритм:
 
