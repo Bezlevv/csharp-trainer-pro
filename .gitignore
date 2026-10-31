@@ -32,5 +32,5 @@ coverage*.xml
 tasks.json.tmp
 appsettings.*.local.json
 
-# Данные приложений (runtime)
-data/
+# Данные приложений (runtime) — только у итогового проекта
+modules/15-final-project/task-tracker/data/
