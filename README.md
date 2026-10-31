@@ -55,6 +55,7 @@
 | 14 | [SOLID и паттерны](modules/14-solid-patterns/README.md) | 5 принципов, Factory, Strategy, Observer, DI | [теория](modules/14-solid-patterns/README.md) | [практика](modules/14-solid-patterns/PRACTICE.md) | [разбор](modules/14-solid-patterns/CODE_REVIEW.md) |
 | 15 | [Итоговый проект](modules/15-final-project/README.md) | консольный трекер задач: архитектура, слои, тесты | [теория](modules/15-final-project/README.md) | [практика](modules/15-final-project/PRACTICE.md) | [разбор](modules/15-final-project/CODE_REVIEW.md) |
 | 16 | [Git и рабочий процесс](modules/16-git/README.md) | ветки, merge/rebase, PR, CI, conventional commits | [теория](modules/16-git/README.md) | [практика](modules/16-git/PRACTICE.md) | [разбор](modules/16-git/CODE_REVIEW.md) |
+| 17 | [Введение в ASP.NET Core](modules/17-aspnet/README.md) | minimal API, HTTP, DI, middleware, тесты API | [теория](modules/17-aspnet/README.md) | [практика](modules/17-aspnet/PRACTICE.md) | [разбор](modules/17-aspnet/CODE_REVIEW.md) |
 
 ## 🏁 Итоговый проект
 
@@ -71,12 +72,12 @@ dotnet test
 
 ## 📈 Что дальше после курса
 
-- **ASP.NET Core** — веб-API и MVC.
-- **Entity Framework Core** — ORM и работа с БД.
+- **Entity Framework Core** — ORM и работа с БД (сейчас в API используется in-memory хранилище).
+- **ASP.NET Core Controllers** — классический стиль MVC-контроллеров (minimal API разобран в [модуле 17](modules/17-aspnet/README.md)).
 - **Docker** — контейнеризация приложений.
 - **Redis / RabbitMQ** — кэш и очереди.
 
-Git и основы рабочий процесса (ветки, PR, code review, CI) уже разобраны в [модуле 16](modules/16-git/README.md).
+Git и основы рабочего процесса (ветки, PR, code review, CI) разобраны в [модуле 16](modules/16-git/README.md).
 
 Курс даёт прочную базу: всё из этого списка будет понятным продолжением,
 а не стеной.

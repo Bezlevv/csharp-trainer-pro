@@ -28,3 +28,9 @@ jobs:
 
       - name: Test module 15
         run: dotnet test modules/15-final-project/task-tracker/TaskTracker.slnx --configuration Release --no-build
+
+      - name: Build module 17 (ASP.NET Core minimal API)
+        run: dotnet build modules/17-aspnet/minimal-api-demo/TaskApi.slnx --configuration Release
+
+      - name: Test module 17
+        run: dotnet test modules/17-aspnet/minimal-api-demo/TaskApi.slnx --configuration Release --no-build
