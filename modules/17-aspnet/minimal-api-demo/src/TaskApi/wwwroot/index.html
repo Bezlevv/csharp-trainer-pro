@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Task API — демо</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; color: #1f2937; }
+    h1 { font-size: 1.5rem; }
+    .row { display: flex; gap: 0.5rem; margin: 1rem 0; }
+    input { flex: 1; padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px; }
+    button { padding: 0.5rem 1rem; border: 0; border-radius: 6px; background: #2563eb; color: #fff; cursor: pointer; }
+    button.secondary { background: #6b7280; }
+    ul { list-style: none; padding: 0; }
+    li { padding: 0.5rem; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; }
+    .badge { font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: #eef2ff; color: #3730a3; }
+    .muted { color: #6b7280; font-size: 0.875rem; }
+    #msg { min-height: 1.2rem; margin-top: 0.5rem; }
+    .error { color: #b91c1c; }
+  </style>
+</head>
+<body>
+  <h1>Task API — интерактивное демо</h1>
+  <p class="muted">GET /api/tasks · POST /api/tasks</p>
+
+  <div class="row">
+    <input id="title" placeholder="Название задачи (например, Learn Web API)" />
+    <button onclick="addTask()">Добавить</button>
+  </div>
+  <div class="row">
+    <button class="secondary" onclick="loadTasks()">Обновить список</button>
+  </div>
+  <div id="msg"></div>
+  <ul id="list"></ul>
+
+  <script>
+    async function loadTasks() {
+      const msg = document.getElementById('msg');
+      msg.textContent = '';
+      try {
+        const res = await fetch('/api/tasks');
+        const tasks = await res.json();
+        const list = document.getElementById('list');
+        if (tasks.length === 0) {
+          list.innerHTML = '<li class="muted">Задач пока нет. Добавь первую!</li>';
+        } else {
+          list.innerHTML = tasks.map(t => {
+            const status = ['Todo', 'InProgress', 'Done'][t.status] ?? t.status;
+            return `<li><span>${escapeHtml(t.title)}</span> <span class="badge">${status}</span></li>`;
+          }).join('');
+        }
+      } catch (e) {
+        msg.textContent = 'Ошибка запроса: ' + e.message;
+        msg.className = 'error';
+      }
+    }
+
+    async function addTask() {
+      const input = document.getElementById('title');
+      const title = input.value.trim();
+      const msg = document.getElementById('msg');
+      msg.className = '';
+      msg.textContent = '';
+      if (!title) { msg.textContent = 'Введи название'; msg.className = 'error'; return; }
+
+      try {
+        const res = await fetch('/api/tasks', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title })
+        });
+        if (!res.ok) {
+          const err = await res.text();
+          msg.textContent = 'Ошибка ' + res.status + ': ' + err;
+          msg.className = 'error';
+          return;
+        }
+        const created = await res.json();
+        msg.textContent = 'Создана: ' + created.title + ' (id: ' + created.id + ')';
+        input.value = '';
+        await loadTasks();
+      } catch (e) {
+        msg.textContent = 'Ошибка запроса: ' + e.message;
+        msg.className = 'error';
+      }
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    loadTasks();
+  </script>
+</body>
+</html>

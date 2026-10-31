@@ -10,6 +10,10 @@ builder.Services.AddScoped<TaskService>();
 
 var app = builder.Build();
 
+// Статические файлы (wwwroot/index.html) для интерактивного демо.
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
 // Группа маршрутов /api/tasks.
 var tasks = app.MapGroup("/api/tasks");
 
