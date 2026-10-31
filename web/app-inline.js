@@ -31,6 +31,8 @@
     }
   }
 
+  var TAB_BY_FILE = { "README.md": "teoria", "PRACTICE.md": "praktika", "CODE_REVIEW.md": "razbor" };
+
   function renderView() {
     var mod = MODULES[state.index];
     var tab = TABS[0];
@@ -71,6 +73,19 @@
     var navLinks = document.querySelectorAll("#view [data-nav]");
     for (var n = 0; n < navLinks.length; n++) {
       navLinks[n].onclick = function (e) { e.preventDefault(); openModule(Number(this.dataset.nav)); };
+    }
+
+    // перехват относительных ссылок на .md внутри модуля → переключение вкладки
+    var contentLinks = document.querySelectorAll("#view .content a");
+    for (var l = 0; l < contentLinks.length; l++) {
+      (function (a) {
+        var href = a.getAttribute("href") || "";
+        if (/^(https?:|mailto:|#|\/|\.\.)/.test(href)) return;
+        var file = href.split("/").pop().split("?")[0];
+        var tab = TAB_BY_FILE[file];
+        if (!tab) return;
+        a.onclick = function (e) { e.preventDefault(); state.tab = tab; renderView(); };
+      })(contentLinks[l]);
     }
   }
 

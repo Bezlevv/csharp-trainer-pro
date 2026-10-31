@@ -64,7 +64,7 @@ async function loadModule(slug, file) {
   if (state.cache[slug] && state.cache[slug][file]) {
     return state.cache[slug][file];
   }
-  const url = `../modules/${slug}/${file}`;
+  const url = `/modules/${slug}/${file}`;
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Не удалось загрузить ${url} (HTTP ${res.status})`);
@@ -107,6 +107,20 @@ async function renderView() {
     view.querySelectorAll(".tabs button").forEach((b) => {
       b.addEventListener("click", () => {
         state.tab = b.dataset.tab;
+        renderView();
+      });
+    });
+
+    // перехват относительных ссылок на .md внутри модуля → переключение вкладки
+    view.querySelectorAll(".content a").forEach((a) => {
+      const href = a.getAttribute("href") || "";
+      if (/^(https?:|mailto:|#|\/|\.\.)/.test(href)) return;
+      const file = href.split("/").pop().split("?")[0];
+      const tab = TABS.find((t) => t.file === file);
+      if (!tab) return;
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        state.tab = tab.id;
         renderView();
       });
     });
