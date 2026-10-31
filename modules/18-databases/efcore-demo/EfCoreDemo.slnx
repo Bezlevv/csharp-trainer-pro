@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/EfCoreDemo/EfCoreDemo.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/EfCoreDemo.Tests/EfCoreDemo.Tests.csproj" />
+  </Folder>
+</Solution>

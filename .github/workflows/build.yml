@@ -34,3 +34,9 @@ jobs:
 
       - name: Test module 17
         run: dotnet test modules/17-aspnet/minimal-api-demo/TaskApi.slnx --configuration Release --no-build
+
+      - name: Build module 18 (EF Core demo)
+        run: dotnet build modules/18-databases/efcore-demo/EfCoreDemo.slnx --configuration Release
+
+      - name: Test module 18
+        run: dotnet test modules/18-databases/efcore-demo/EfCoreDemo.slnx --configuration Release --no-build

@@ -56,6 +56,10 @@
 | 15 | [Итоговый проект](modules/15-final-project/README.md) | консольный трекер задач: архитектура, слои, тесты | [теория](modules/15-final-project/README.md) | [практика](modules/15-final-project/PRACTICE.md) | [разбор](modules/15-final-project/CODE_REVIEW.md) |
 | 16 | [Git и рабочий процесс](modules/16-git/README.md) | ветки, merge/rebase, PR, CI, conventional commits | [теория](modules/16-git/README.md) | [практика](modules/16-git/PRACTICE.md) | [разбор](modules/16-git/CODE_REVIEW.md) |
 | 17 | [Введение в ASP.NET Core](modules/17-aspnet/README.md) | minimal API, HTTP, DI, middleware, тесты API | [теория](modules/17-aspnet/README.md) | [практика](modules/17-aspnet/PRACTICE.md) | [разбор](modules/17-aspnet/CODE_REVIEW.md) |
+| 18 | [Базы данных и EF Core](modules/18-databases/README.md) | DbContext, LINQ-запросы, миграции, провайдеры | [теория](modules/18-databases/README.md) | [практика](modules/18-databases/PRACTICE.md) | [разбор](modules/18-databases/CODE_REVIEW.md) |
+| 19 | [Продвинутая архитектура](modules/19-architecture/README.md) | Clean Architecture, слои, Repository, CQRS | [теория](modules/19-architecture/README.md) | [практика](modules/19-architecture/PRACTICE.md) | [разбор](modules/19-architecture/CODE_REVIEW.md) |
+| 20 | [Наблюдаемость](modules/20-observability/README.md) | логирование, метрики, трейсинг, OpenTelemetry | [теория](modules/20-observability/README.md) | [практика](modules/20-observability/PRACTICE.md) | [разбор](modules/20-observability/CODE_REVIEW.md) |
+| 21 | [Безопасность веб-приложений](modules/21-security/README.md) | JWT, роли, секреты, OWASP Top 10 | [теория](modules/21-security/README.md) | [практика](modules/21-security/PRACTICE.md) | [разбор](modules/21-security/CODE_REVIEW.md) |
 
 ## 🏁 Итоговый проект
 
@@ -72,12 +76,12 @@ dotnet test
 
 ## 📈 Что дальше после курса
 
-- **Entity Framework Core** — ORM и работа с БД (сейчас в API используется in-memory хранилище).
-- **ASP.NET Core Controllers** — классический стиль MVC-контроллеров (minimal API разобран в [модуле 17](modules/17-aspnet/README.md)).
-- **Docker** — контейнеризация приложений.
-- **Redis / RabbitMQ** — кэш и очереди.
+- **Docker и DevOps** — контейнеризация, деплой, CI/CD.
+- **Микросервисы и сообщения** — RabbitMQ/Kafka, распределённые системы.
+- **Производительность .NET** — профилирование, BenchmarkDotNet, Span/Memory.
+- **Системный дизайн** — масштабируемость, кэширование, распределённые системы.
 
-Git и основы рабочего процесса (ветки, PR, code review, CI) разобраны в [модуле 16](modules/16-git/README.md).
+Базовый стек уже пройден: C# (01–15), Git (16), ASP.NET Core (17), EF Core (18), архитектура (19), наблюдаемость (20), безопасность (21).
 
 Курс даёт прочную базу: всё из этого списка будет понятным продолжением,
 а не стеной.
