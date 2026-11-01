@@ -2080,6 +2080,141 @@ Console.WriteLine(s);
 <p>Поздравляю — <strong>Уровень 1 пройден!</strong> Дальше — Уровень 2: классы и объектно-ориентированное программирование.</p>
 
 <div class="pagebreak"></div>
+<h1>Урок 17. Отладка и чтение ошибок</h1>
+<h2>Цель</h2>
+<p>Научиться понимать сообщения об ошибках и находить, что сломалось.</p>
+<h2>Словарик новых слов</h2>
+<ul>
+<li><strong>Компилятор</strong> — переводчик с C# на исполняемый код. Если он не понял — показывает ошибку.</li>
+<li><strong>Ошибка компиляции</strong> — «статическая» ошибка: код неверен, программа не соберётся.</li>
+<li><strong>Ошибка во время выполнения (runtime)</strong> — код собрался, но упал в процессе.</li>
+<li><strong>Трассировка стека (stack trace)</strong> — список вызовов, который показывает, где случилась ошибка.</li>
+<li><strong>Отладка</strong> — процесс поиска и исправления ошибок.</li>
+</ul>
+<h2>Теория «с нуля»</h2>
+<h3>Аналогия: переводчик и шеф-повар</h3>
+<p>Компилятор — капризный переводчик: если ты сделал опечатку — он не «догадывается», а честно указывает строку. А ошибка во время выполнения — как рецепт, который собрался, но при готовке что-то пошло не так. Главное — <strong>читать сообщения</strong>, а не пугаться.</p>
+<h3>Виды ошибок</h3>
+<p><strong>1. Ошибка компиляции — программа не собирается</strong></p>
+<pre><code class="language-csharp">Console.WriteLine(&quot;Привет&quot;)   // забыли ;
+</code></pre>
+<p>Сообщение компилятора: <code>; expected</code> (ожидалась точка с запятой) и номер строки. Ошибку видно сразу.</p>
+<p><strong>2. Ошибка во время выполнения — программа упала</strong></p>
+<pre><code class="language-csharp">int x = int.Parse(&quot;пять&quot;);   // FormatException
+</code></pre>
+<p>Программа <em>собралась</em>, но при запуске бросила исключение.</p>
+<h3>Как читать ошибку</h3>
+<p>Сообщение обычно содержит:</p>
+<ul>
+<li><strong>тип ошибки</strong> (например, <code>FormatException</code>);</li>
+<li><strong>объяснение</strong> («Input string was not in a correct format»);</li>
+<li><strong>строку и файл</strong>, где случилось.</li>
+</ul>
+<h3>Трассировка стека</h3>
+<p>Когда падает, C# показывает цепочку вызовов — от места падения вверх. Читай <strong>самую верхнюю строку</strong> — это место, где реально случилась ошибка, а не вся цепочка.</p>
+<h3>Приёмы отладки без отладчика</h3>
+<ul>
+<li>Выводи промежуточные значения: <code>Console.WriteLine($&quot;debug: {variable}&quot;)</code>.</li>
+<li>Проверяй входные данные перед использованием.</li>
+<li>Читай строчку, на которую указывает ошибка, буквально.</li>
+</ul>
+<h2>Примеры</h2>
+<p><strong>Частая ошибка: выход за границы массива</strong></p>
+<pre><code class="language-csharp">int[] a = { 1, 2, 3 };
+Console.WriteLine(a[5]);   // IndexOutOfRangeException
+</code></pre>
+<p>Сообщение укажет на строку с <code>a[5]</code>. Индекс 5 не существует (есть 0..2).</p>
+<h2>Сделай сам (задачи с подсказками)</h2>
+<ol>
+<li>Сделай 3 намеренные ошибки (забытый <code>;</code>, опечатка в <code>Console</code>, неверный тип) и запиши, что говорит компилятор.<br><em>Подсказка: компилятор почти всегда указывает строку и номер.</em></li>
+<li>Вызови <code>int.Parse(&quot;abc&quot;)</code> без try/catch и прочитай тип исключения.<br><em>Подсказка: это FormatException.</em></li>
+<li>Обратись к <code>array[10]</code> в массиве из 3 элементов; запиши сообщение.<br><em>Подсказка: это IndexOutOfRangeException.</em></li>
+<li>Добавь <code>Console.WriteLine</code> для отладки внутри метода и найди, где значение становится неверным.<br><em>Подсказка: печатай значение до и после операции.</em></li>
+</ol>
+<h2>Разбор типичных ошибок</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Что не так</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Игнорировать сообщение об ошибке</td>
+<td>теряешь главную подсказку</td>
+<td>читай тип, объяснение и строку</td>
+</tr>
+<tr>
+<td>Паниковать при стек-трейсе</td>
+<td>большая простыня пугает</td>
+<td>смотри только верхнюю строку</td>
+</tr>
+<tr>
+<td>«Мне кажется, ошибка где-то тут»</td>
+<td>бессистемный поиск</td>
+<td>выводи отладочные значения и сужай круг</td>
+</tr>
+<tr>
+<td>Менять всё подряд наугад</td>
+<td>ломаешь рабочее</td>
+<td>правь одну строку и проверяй заново</td>
+</tr>
+</tbody></table>
+<h2>Тест — проверь себя</h2>
+<p><strong>Вопрос 1.</strong> Где компилятор указывает место ошибки?</p>
+<ul>
+<li>A) Нигде, надо искать самому.</li>
+<li>B) В сообщении: файл и номер строки.</li>
+<li>C) Всегда в конце программы.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: компилятор сообщает файл и строку.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Указывает.</li>
+<li>C — Не «всегда в конце».</li>
+</ul>
+<p><strong>Вопрос 2.</strong> Чем ошибка компиляции отличается от ошибки во время выполнения?</p>
+<ul>
+<li>A) Ничем.</li>
+<li>B) Компиляция: код не собрался; runtime: собрался, но упал при запуске.</li>
+<li>C) Runtime бывает только на Linux.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: это два разных этапа.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Разница есть.</li>
+<li>C — Не связано с ОС.</li>
+</ul>
+<p><strong>Вопрос 3.</strong> Что такое трассировка стека?</p>
+<ul>
+<li>A) Список команд компьютера.</li>
+<li>B) Цепочка вызовов, показывающая, где случилась ошибка.</li>
+<li>C) Резервная копия кода.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: стек-трейс показывает путь вызовов.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Это не «команды компьютера».</li>
+<li>C — Это не копия.</li>
+</ul>
+<p><strong>Вопрос 4.</strong> <code>int.Parse(&quot;abc&quot;)</code> — это:</p>
+<ul>
+<li>A) Ошибка компиляции.</li>
+<li>B) Ошибка во время выполнения (FormatException).</li>
+<li>C) Валидный код без ошибок.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: код компилируется, но при запуске падает.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Компилируется нормально.</li>
+<li>C — При запуске упадёт.</li>
+</ul>
+<h2>Итог урока</h2>
+<ul>
+<li>Ошибки бывают на этапе компиляции и во время выполнения.</li>
+<li>Читай тип ошибки, объяснение и строку.</li>
+<li>В стек-трейсе смотри верхнюю строку.</li>
+<li>Используй <code>Console.WriteLine</code> для отладки.</li>
+</ul>
+
+<div class="pagebreak"></div>
 <h1>Урок 20. Классы и объекты</h1>
 <h2>Цель</h2>
 <p>Понять главную идею ООП — «класс» и «объект» — и создать свой первый класс.</p>
@@ -3381,6 +3516,140 @@ if (p == Priority.High) Console.WriteLine(&quot;Срочно!&quot;);
 <p>Поздравляю — <strong>Уровень 2 пройден!</strong> Дальше — Уровень 3 (Middle): исключения, тесты, LINQ, асинхронность, JSON.</p>
 
 <div class="pagebreak"></div>
+<h1>Урок 28. Null-безопасность</h1>
+<h2>Цель</h2>
+<p>Понять, что такое <code>null</code>, почему обращение к нему ломает программу, и как безопасно с ним работать.</p>
+<h2>Словарик новых слов</h2>
+<ul>
+<li><strong><code>null</code></strong> — «ничего», отсутствие ссылки. Переменная ссылочного типа может не указывать ни на что.</li>
+<li><strong><code>NullReferenceException</code></strong> — ошибка: попытались использовать <code>null</code> как объект.</li>
+<li><strong>Nullable <code>?</code></strong> — пометка «может быть null».</li>
+<li><strong><code>??</code></strong> — «если null, возьми что-то другое».</li>
+<li><strong><code>?.</code></strong> — «если не null, обратись к члену».</li>
+</ul>
+<h2>Теория «с нуля»</h2>
+<h3>Аналогия: пустая коробка</h3>
+<p>Представь коробку без содержимого (<code>null</code>). Если ты попробуешь взять из неё предмет (<code>box.Length</code>) — ничего нет, и программа упадёт. <code>null</code> — это «коробка с надписью: внутри ничего нет».</p>
+<h3>Что такое NullReferenceException</h3>
+<pre><code class="language-csharp">string s = null;
+Console.WriteLine(s.Length);   // NullReferenceException
+</code></pre>
+<p><code>s</code> — null, а мы просим <code>Length</code>. Это как открыть пустую коробку и требовать «достань предмет».</p>
+<h3>Как предотвратить: проверка</h3>
+<pre><code class="language-csharp">if (s != null)
+{
+    Console.WriteLine(s.Length);
+}
+</code></pre>
+<h3>Оператор <code>??</code> — «если null, то…»</h3>
+<pre><code class="language-csharp">string name = Console.ReadLine();      // может быть null
+string safe = name ?? &quot;Гость&quot;;        // если name == null → &quot;Гость&quot;
+</code></pre>
+<h3>Оператор <code>?.</code> — «если не null, обращайся»</h3>
+<pre><code class="language-csharp">int? length = s?.Length;   // если s == null → length = null (без падения)
+</code></pre>
+<h3>Пометка nullable <code>?</code></h3>
+<p>В современном C# мы «говорим» компилятору, может ли быть null:</p>
+<pre><code class="language-csharp">string? maybe = null;    // может быть null
+string required = &quot;текст&quot;; // не должен быть null
+</code></pre>
+<p>Компилятор предупредит, если ты разыменуешь <code>maybe</code> без проверки.</p>
+<h3>Чего не делать</h3>
+<ul>
+<li>Не «глотать» NullReferenceException надеждой, что не случится.</li>
+<li>Проверяй входные данные (особенно извне: консоль, файлы, сеть).</li>
+</ul>
+<h2>Примеры</h2>
+<pre><code class="language-csharp">// Безопасное чтение
+string? input = Console.ReadLine();
+Console.WriteLine(input?.Trim() ?? &quot;(пусто)&quot;);
+</code></pre>
+<h2>Сделай сам (задачи с подсказками)</h2>
+<ol>
+<li>Создай <code>string s = null;</code> и попробуй <code>s.Length</code> — запиши тип ошибки.<br><em>Подсказка: это NullReferenceException.</em></li>
+<li>Исправь это через <code>if (s != null)</code>.<br><em>Подсказка: проверка перед использованием.</em></li>
+<li>Используй <code>??</code> для значения по умолчанию.<br><em>Подсказка: <code>string x = s ?? &quot;по умолчанию&quot;;</code></em></li>
+<li>Используй <code>?.</code> и сравни результат с null.<br><em>Подсказка: <code>int? len = s?.Length;</code></em></li>
+</ol>
+<h2>Разбор типичных ошибок</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Что не так</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>s.Length</code> при s == null</td>
+<td>падение</td>
+<td>проверь или используй <code>?.</code></td>
+</tr>
+<tr>
+<td>Пометить <code>string</code> как nullable, а потом не проверять</td>
+<td>компилятор предупредит</td>
+<td>проверяй</td>
+</tr>
+<tr>
+<td>Использовать <code>??</code> на null-объекте, не думая о смысле</td>
+<td>иногда маскирует ошибку</td>
+<td>выбирай осознанно</td>
+</tr>
+</tbody></table>
+<h2>Тест — проверь себя</h2>
+<p><strong>Вопрос 1.</strong> Что такое <code>null</code>?</p>
+<ul>
+<li>A) Ноль.</li>
+<li>B) Отсутствие ссылки («ничего»).</li>
+<li>C) Пустая строка.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: null — отсутствие объекта, а не 0 и не &quot;&quot;.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — 0 — это число.</li>
+<li>C — &quot;&quot; — пустая, но <em>существующая</em> строка.</li>
+</ul>
+<p><strong>Вопрос 2.</strong> Что будет при <code>string s = null; Console.WriteLine(s.Length);</code>?</p>
+<ul>
+<li>A) Выведет 0.</li>
+<li>B) NullReferenceException.</li>
+<li>C) Выведет «null».</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: обращение к члену null-объекта падает.<br>Почему неверны остальные:</p>
+<ul>
+<li>A, C — Программа упадёт до вывода.</li>
+</ul>
+<p><strong>Вопрос 3.</strong> Что вернёт <code>s?.Length</code>, если <code>s == null</code>?</p>
+<ul>
+<li>A) 0.</li>
+<li>B) null.</li>
+<li>C) Ошибку.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: <code>?.</code> безопасно возвращает null, не падая.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Не 0.</li>
+<li>C — Ошибки нет.</li>
+</ul>
+<p><strong>Вопрос 4.</strong> Что делает <code>string name = input ?? &quot;Гость&quot;;</code>?</p>
+<ul>
+<li>A) Всегда присваивает «Гость».</li>
+<li>B) Если input == null, присваивает «Гость»; иначе — значение input.</li>
+<li>C) Бросает ошибку.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: <code>??</code> — «если null, возьми правую часть».<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Не «всегда».</li>
+<li>C — Ошибки нет.</li>
+</ul>
+<h2>Итог урока</h2>
+<ul>
+<li><code>null</code> — отсутствие ссылки; обращение к нему падает.</li>
+<li><code>?</code> — пометка «может быть null».</li>
+<li><code>??</code> — значение по умолчанию при null.</li>
+<li><code>?.</code> — безопасное обращение.</li>
+<li>Проверяй данные извне.</li>
+</ul>
+
+<div class="pagebreak"></div>
 <h1>Урок 30. Исключения и try/catch</h1>
 <h2>Цель</h2>
 <p>Понять, как программа сообщает об ошибках и как не дать ей «рухнуть».</p>
@@ -4609,6 +4878,154 @@ public class PasswordValidatorTests
 <li>защищать код тестами.</li>
 </ul>
 <p>Поздравляю — <strong>Уровень 3 пройден!</strong> Дальше — Уровень 4 (Senior): SOLID, архитектура, безопасность, наблюдаемость.</p>
+
+<div class="pagebreak"></div>
+<h1>Урок 37. Экскурсия по стандартной библиотеке</h1>
+<h2>Цель</h2>
+<p>Познакомиться с часто используемыми готовыми помощниками .NET: <code>string</code>, <code>Math</code>, <code>Random</code>, <code>DateTime</code>, <code>Guid</code>.</p>
+<h2>Словарик новых слов</h2>
+<ul>
+<li><strong>BCL (Base Class Library)</strong> — стандартная библиотека классов .NET. В ней — сотни готовых инструментов.</li>
+<li><strong>Класс-помощник</strong> — класс со статическими методами (например, <code>Math</code>).</li>
+</ul>
+<h2>Теория «с нуля»</h2>
+<h3>Зачем это нужно</h3>
+<p>Не нужно писать всё самому. Многие задачи уже решены за нас — важно знать, что они существуют.</p>
+<h3>string — работа с текстом</h3>
+<pre><code class="language-csharp">string s = &quot;Привет, мир!&quot;;
+Console.WriteLine(s.Length);         // 13
+Console.WriteLine(s.ToUpper());      // ПРИВЕТ, МИР!
+Console.WriteLine(s.ToLower());      // привет, мир!
+Console.WriteLine(s.Trim());         // убирает пробелы с краёв
+Console.WriteLine(s.Replace(&quot;мир&quot;, &quot;C#&quot;)); // Привет, C#!
+string[] parts = s.Split(&quot;, &quot;);      // [&quot;Привет&quot;, &quot;мир!&quot;]
+Console.WriteLine(s.StartsWith(&quot;Привет&quot;)); // True
+</code></pre>
+<h3>Math — математика</h3>
+<pre><code class="language-csharp">Console.WriteLine(Math.Max(3, 9));    // 9
+Console.WriteLine(Math.Min(3, 9));    // 3
+Console.WriteLine(Math.Abs(-5));      // 5
+Console.WriteLine(Math.Pow(2, 10));   // 1024
+Console.WriteLine(Math.Sqrt(81));     // 9
+Console.WriteLine(Math.Round(3.14159, 2)); // 3.14
+</code></pre>
+<h3>Random — случайные числа</h3>
+<pre><code class="language-csharp">Random rnd = new Random();
+Console.WriteLine(rnd.Next(1, 101));   // целое от 1 до 100
+Console.WriteLine(rnd.NextDouble());   // дробное от 0 до 1
+</code></pre>
+<p><code>Random.Shared</code> — один общий генератор (удобно): <code>Random.Shared.Next(1, 101)</code>.</p>
+<h3>DateTime — даты и время</h3>
+<pre><code class="language-csharp">DateTime now = DateTime.Now;        // текущее (локальное)
+DateTime utc = DateTime.UtcNow;     // текущее (UTC — для логики)
+Console.WriteLine(now.ToString(&quot;dd.MM.yyyy&quot;));
+TimeSpan days = DateTime.Today - new DateTime(2000, 5, 17);
+Console.WriteLine(days.Days);       // сколько дней прошло
+</code></pre>
+<h3>Guid — уникальные идентификаторы</h3>
+<pre><code class="language-csharp">Guid id = Guid.NewGuid();
+Console.WriteLine(id);   // например, 3f2a...-...-...
+</code></pre>
+<p><code>Guid</code> — почти гарантированно уникальный идентификатор (для id записей).</p>
+<h2>Примеры</h2>
+<pre><code class="language-csharp">// Случайный пароль из 8 символов (маленькая демонстрация)
+Random rnd = Random.Shared;
+string chars = &quot;abcdefghijklmnopqrstuvwxyz0123456789&quot;;
+string password = &quot;&quot;;
+for (int i = 0; i &lt; 8; i++) password += chars[rnd.Next(chars.Length)];
+Console.WriteLine(password);
+</code></pre>
+<h2>Сделай сам (задачи с подсказками)</h2>
+<ol>
+<li>Выведи длину, верхний регистр и слово по индексу для <code>&quot;C# — это круто&quot;</code>.<br><em>Подсказка: <code>Split(&#39; &#39;)</code> → <code>parts[0]</code>.</em></li>
+<li>Посчитай <code>2^10</code> и <code>√(144)</code> через Math.<br><em>Подсказка: <code>Math.Pow(2,10)</code>, <code>Math.Sqrt(144)</code>.</em></li>
+<li>Выведи 3 случайных числа от 1 до 6.<br><em>Подсказка: <code>Random.Shared.Next(1,7)</code> в цикле.</em></li>
+<li>Выведи текущую дату в формате «дд.мм.гггг».<br><em>Подсказка: <code>DateTime.Today.ToString(&quot;dd.MM.yyyy&quot;)</code>.</em></li>
+<li>Создай случайный Guid и выведи его.<br><em>Подсказка: <code>Guid.NewGuid()</code>.</em></li>
+</ol>
+<h2>Разбор типичных ошибок</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Что не так</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>rnd.Next(1, 101)</code> и ожидание 101</td>
+<td>верхняя граница НЕ включается</td>
+<td><code>Next(1, 100)</code> для 1..100</td>
+</tr>
+<tr>
+<td><code>DateTime.Now</code> в логике</td>
+<td>локальное время, лучше Utc</td>
+<td><code>DateTime.UtcNow</code></td>
+</tr>
+<tr>
+<td><code>Split(&quot; &quot;)</code> с несколькими пробелами</td>
+<td>пустые элементы</td>
+<td><code>Split(&#39; &#39;, StringSplitOptions.RemoveEmptyEntries)</code></td>
+</tr>
+<tr>
+<td>Складывать строки в цикле без нужды</td>
+<td>медленно</td>
+<td><code>StringBuilder</code>/join</td>
+</tr>
+</tbody></table>
+<h2>Тест — проверь себя</h2>
+<p><strong>Вопрос 1.</strong> Что вернёт <code>Math.Max(4, 7)</code>?</p>
+<ul>
+<li>A) 4</li>
+<li>B) 7</li>
+<li>C) 11</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: Max возвращает большее.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — 4 меньше.</li>
+<li>C — 11 — это сумма.</li>
+</ul>
+<p><strong>Вопрос 2.</strong> <code>Random.Shared.Next(1, 7)</code> даёт числа:</p>
+<ul>
+<li>A) от 1 до 7 включительно.</li>
+<li>B) от 1 до 6 включительно.</li>
+<li>C) от 0 до 6.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: верхняя граница не включается → 1..6.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — 7 не включается.</li>
+<li>C — нижняя граница 1, не 0.</li>
+</ul>
+<p><strong>Вопрос 3.</strong> Что делает <code>s.Trim()</code>?</p>
+<ul>
+<li>A) Делит строку.</li>
+<li>B) Убирает пробелы с краёв.</li>
+<li>C) Делает строку заглавной.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: Trim обрезает пробелы по краям.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Деление — это Split.</li>
+<li>C — Заглавные — это ToUpper.</li>
+</ul>
+<p><strong>Вопрос 4.</strong> Для уникального идентификатора лучше всего использовать:</p>
+<ul>
+<li>A) <code>Math.Max</code></li>
+<li>B) <code>Guid.NewGuid()</code></li>
+<li>C) <code>DateTime.Now</code></li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: Guid почти гарантированно уникален.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Max — это не про уникальность.</li>
+<li>C — Время не уникально.</li>
+</ul>
+<h2>Итог урока</h2>
+<ul>
+<li><code>string</code> — методы для работы с текстом.</li>
+<li><code>Math</code> — математические функции.</li>
+<li><code>Random</code> — случайные числа (<code>Next(1, 7)</code> не включает 7).</li>
+<li><code>DateTime</code> — даты (в логике — <code>UtcNow</code>).</li>
+<li><code>Guid.NewGuid()</code> — уникальные id.</li>
+</ul>
 
 <div class="pagebreak"></div>
 <h1>Урок 40. SOLID · Single Responsibility (SRP)</h1>
