@@ -34,9 +34,10 @@ function serveStatic(req, res) {
   });
 }
 
-function runCode(code, cb) {
+function runCode(code, input, cb) {
   const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   const dir = path.join(TMP, id);
+  const outDir = path.join(dir, "out");
   fs.mkdirSync(dir, { recursive: true });
 
   fs.writeFileSync(path.join(dir, "Program.cs"), code);
@@ -50,15 +51,27 @@ function runCode(code, cb) {
     "</PropertyGroup></Project>");
 
   const start = Date.now();
-  execFile(DOTNET, ["run", "--project", dir, "--configuration", "Release"],
+
+  // 1) Сборка в отдельную папку out/
+  execFile(DOTNET, ["build", dir, "-c", "Release", "-o", outDir, "--nologo"],
     { timeout: 45000, cwd: dir, windowsHide: true },
     (err, stdout, stderr) => {
-      fs.rmSync(dir, { recursive: true, force: true });
-      const ms = Date.now() - start;
       if (err) {
-        return cb({ output: stdout + "\n" + stderr, error: true, ms });
+        fs.rmSync(dir, { recursive: true, force: true });
+        return cb({ output: stdout + "\n" + stderr, error: true, ms: Date.now() - start });
       }
-      cb({ output: stdout, error: false, ms });
+      // 2) Запуск exe напрямую — stdin пробрасывается надёжнее
+      const exe = path.join(outDir, "Run.exe");
+      const runOpts = { timeout: 45000, cwd: dir, windowsHide: true };
+      if (input && input.length) {
+        runOpts.input = input.endsWith("\n") ? input : input + "\n";
+      }
+      execFile(exe, [], runOpts, (err2, stdout2, stderr2) => {
+        fs.rmSync(dir, { recursive: true, force: true });
+        const ms = Date.now() - start;
+        if (err2) return cb({ output: stdout2 + "\n" + stderr2, error: true, ms });
+        cb({ output: stdout2, error: false, ms });
+      });
     });
 }
 
@@ -67,14 +80,18 @@ const server = http.createServer((req, res) => {
     let body = "";
     req.on("data", (c) => { body += c; });
     req.on("end", () => {
-      let code = "";
-      try { code = JSON.parse(body || "{}").code || ""; } catch { code = ""; }
+      let code = "", input = "";
+      try {
+        const parsed = JSON.parse(body || "{}");
+        code = parsed.code || "";
+        input = parsed.input || "";
+      } catch { code = ""; }
       if (!code.trim()) {
         res.writeHead(400, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ output: "Код пустой.", error: true }));
         return;
       }
-      runCode(code, (result) => {
+      runCode(code, input, (result) => {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(result));
       });

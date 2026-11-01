@@ -49,11 +49,12 @@
 Console.WriteLine("Сумма 2+3 = " + (2 + 3));</textarea>
       <div class="row">
         <button id="run">▶ Запустить</button>
-        <button id="tpl1" class="tpls">пример: цикл</button>
-        <button id="tpl2" class="tpls">пример: класс</button>
-        <button id="tpl3" class="tpls">пример: LINQ</button>
+        <button id="tpl1" class="tpls">цикл</button>
+        <button id="tpl2" class="tpls">класс</button>
+        <button id="tpl3" class="tpls">LINQ</button>
+        <button id="tpl5" class="tpls">try/catch</button>
       </div>
-      <div class="meta">Каждый запуск — реальная компиляция и выполнение через <code>dotnet run</code> (обычно 3–7 секунд). Ввод с клавиатуры (<code>Console.ReadLine</code>) в песочнице не поддерживается.</div>
+      <div class="meta">Запуск — реальная компиляция через <code>dotnet build</code> + исполнение (2–7 секунд). Примечание: <code>Console.ReadLine()</code> в песочнице не поддерживается.</div>
     </div>
 
     <div class="panel">
@@ -70,7 +71,8 @@ Console.WriteLine("Сумма 2+3 = " + (2 + 3));</textarea>
     const templates = {
       tpl1: "for (int i = 1; i <= 5; i++)\n{\n    Console.WriteLine($\"Строка {i}\");\n}",
       tpl2: "var cat = new Cat(\"Мурка\");\ncat.Say();\n\nclass Cat\n{\n    private readonly string _name;\n    public Cat(string n) => _name = n;\n    public void Say() => Console.WriteLine($\"{_name}: мяу!\");\n}",
-      tpl3: "var nums = new[] { 10, 3, 7, 2 };\nvar big = nums.Where(n => n > 4).OrderByDescending(n => n);\nConsole.WriteLine(string.Join(\", \", big));"
+      tpl3: "var nums = new[] { 10, 3, 7, 2 };\nvar big = nums.Where(n => n > 4).OrderByDescending(n => n);\nConsole.WriteLine(string.Join(\", \", big));",
+      tpl5: "try\n{\n    int x = int.Parse(\"пять\");\n    Console.WriteLine(x);\n}\ncatch (FormatException)\n{\n    Console.WriteLine(\"Это не число!\");\n}"
     };
     Object.keys(templates).forEach((id) => {
       $("#" + id).onclick = () => { code.value = templates[id]; out.textContent = "— код заменён, нажми Запустить —"; out.className = ""; meta.textContent = ""; };
