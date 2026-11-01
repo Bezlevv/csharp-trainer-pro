@@ -92,6 +92,8 @@ node web/sandbox-server.js
 | 21 | [Безопасность веб-приложений](modules/21-security/README.md) | JWT, роли, секреты, OWASP Top 10 | [теория](modules/21-security/README.md) | [практика](modules/21-security/PRACTICE.md) | [разбор](modules/21-security/CODE_REVIEW.md) |
 | 22 | [Docker и деплой](modules/22-docker/README.md) | контейнеры, Dockerfile, compose, деплой | [теория](modules/22-docker/README.md) | [практика](modules/22-docker/PRACTICE.md) | [разбор](modules/22-docker/CODE_REVIEW.md) |
 | 23 | [Собеседование и повторение](modules/23-interview/README.md) | карта повторения, типичные вопросы | [теория](modules/23-interview/README.md) | [практика](modules/23-interview/PRACTICE.md) | [разбор](modules/23-interview/CODE_REVIEW.md) |
+| 24 | [Алгоритмы и структуры данных](modules/24-algorithms/README.md) | Big O, поиск, сортировка, Stack/Queue/HashSet | [теория](modules/24-algorithms/README.md) | [практика](modules/24-algorithms/PRACTICE.md) | [разбор](modules/24-algorithms/CODE_REVIEW.md) |
+| 25 | [Микросервисы и очереди](modules/25-microservices/README.md) | монолит vs микросервисы, событийный подход | [теория](modules/25-microservices/README.md) | [практика](modules/25-microservices/PRACTICE.md) | [разбор](modules/25-microservices/CODE_REVIEW.md) |
 
 ## 🏁 Итоговый проект
 

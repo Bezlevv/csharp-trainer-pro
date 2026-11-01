@@ -16643,4 +16643,519 @@ for (int i = 0; i &lt; 10; i++) { sum += numbers[i]; }
 <h2>Вывод</h2>
 <p>Собеседование проверяет понимание, а не зубрёжку. Умей объяснять на примерах и «почему».</p>
 
+<div class="pagebreak"></div>
+<h1>Модуль 24: Алгоритмы и структуры данных</h1>
+<blockquote>
+<p><strong>Цель:</strong> освоить базовые алгоритмы и структуры данных, которые спрашивают на собеседованиях и которые реально нужны в работе.</p>
+</blockquote>
+<h2>Зачем это нужно</h2>
+<p>Понимание алгоритмов — как знание грамматики для писателя. Даже если ты не пишешь сортировки каждый день, ты обязан уметь выбрать подходящую структуру данных и понимать сложность (O-нотацию).</p>
+<h2>Теория</h2>
+<h3>1. Сложность алгоритмов (Big O)</h3>
+<p>Big O описывает, как растёт время работы при росте входных данных:</p>
+<table>
+<thead>
+<tr>
+<th>Запись</th>
+<th>Смысл</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>O(1)</td>
+<td>константное время</td>
+<td>доступ по индексу, поиск в Dictionary</td>
+</tr>
+<tr>
+<td>O(log n)</td>
+<td>логарифмическое</td>
+<td>бинарный поиск</td>
+</tr>
+<tr>
+<td>O(n)</td>
+<td>линейное</td>
+<td>проход по массиву</td>
+</tr>
+<tr>
+<td>O(n log n)</td>
+<td>почти линейное</td>
+<td>быстрая сортировка</td>
+</tr>
+<tr>
+<td>O(n²)</td>
+<td>квадратичное</td>
+<td>вложенные циклы</td>
+</tr>
+</tbody></table>
+<h3>2. Массив vs Список</h3>
+<ul>
+<li>Массив — фиксированный размер, быстрый доступ по индексу O(1).</li>
+<li><code>List&lt;T&gt;</code> — динамический (внутри массив), добавление в конец O(1) в среднем.</li>
+</ul>
+<h3>3. Линейный поиск</h3>
+<pre><code class="language-csharp">int LinearSearch(int[] arr, int target)
+{
+    for (int i = 0; i &lt; arr.Length; i++)
+        if (arr[i] == target) return i;
+    return -1;
+}
+</code></pre>
+<p>O(n). Работает на любом массиве.</p>
+<h3>4. Бинарный поиск (только отсортированный)</h3>
+<pre><code class="language-csharp">int BinarySearch(int[] sorted, int target)
+{
+    int left = 0, right = sorted.Length - 1;
+    while (left &lt;= right)
+    {
+        int mid = left + (right - left) / 2;
+        if (sorted[mid] == target) return mid;
+        if (sorted[mid] &lt; target) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
+}
+</code></pre>
+<p>O(log n). Массив обязан быть отсортирован.</p>
+<h3>5. Пузырьковая сортировка (для понимания)</h3>
+<pre><code class="language-csharp">void BubbleSort(int[] arr)
+{
+    for (int i = 0; i &lt; arr.Length - 1; i++)
+        for (int j = 0; j &lt; arr.Length - 1 - i; j++)
+            if (arr[j] &gt; arr[j + 1])
+                (arr[j], arr[j + 1]) = (arr[j + 1], arr[j]);
+}
+</code></pre>
+<p>O(n²). На практике используют встроенные <code>Array.Sort</code>/<code>OrderBy</code> (O(n log n)).</p>
+<h3>6. Структуры данных, которые нужно знать</h3>
+<table>
+<thead>
+<tr>
+<th>Структура</th>
+<th>Особенности</th>
+<th>Когда</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>List&lt;T&gt;</code></td>
+<td>динамический массив, доступ по индексу</td>
+<td>хранение последовательности</td>
+</tr>
+<tr>
+<td><code>Dictionary&lt;K,V&gt;</code></td>
+<td>ключ→значение O(1)</td>
+<td>поиск по ключу</td>
+</tr>
+<tr>
+<td><code>HashSet&lt;T&gt;</code></td>
+<td>уникальность, O(1)</td>
+<td>проверка «есть ли»</td>
+</tr>
+<tr>
+<td><code>Stack&lt;T&gt;</code></td>
+<td>LIFO</td>
+<td>«назад», скобки</td>
+</tr>
+<tr>
+<td><code>Queue&lt;T&gt;</code></td>
+<td>FIFO</td>
+<td>очередь задач</td>
+</tr>
+<tr>
+<td><code>LinkedList&lt;T&gt;</code></td>
+<td>быстрое вставление в середину</td>
+<td>редкие, специальные случаи</td>
+</tr>
+</tbody></table>
+<h3>7. Пример: проверка скобок через Stack</h3>
+<pre><code class="language-csharp">bool IsBalanced(string s)
+{
+    var stack = new Stack&lt;char&gt;();
+    foreach (char c in s)
+    {
+        if (c is &#39;(&#39; or &#39;[&#39; or &#39;{&#39;) stack.Push(c);
+        else if (c is &#39;)&#39; or &#39;]&#39; or &#39;}&#39;)
+        {
+            if (stack.Count == 0) return false;
+            if ((stack.Pop(), c) is (&#39;(&#39;, &#39;)&#39;) or (&#39;[&#39;, &#39;]&#39;) or (&#39;{&#39;, &#39;}&#39;)) continue;
+            return false;
+        }
+    }
+    return stack.Count == 0;
+}
+</code></pre>
+<h2>Типичные ошибки</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Почему плохо</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Бинарный поиск по несортированному массиву</td>
+<td>результат неверен</td>
+<td>сортируй заранее</td>
+</tr>
+<tr>
+<td>Двойной цикл там, где можно Dictionary</td>
+<td>O(n²) вместо O(n)</td>
+<td>думай о структуре</td>
+</tr>
+<tr>
+<td><code>List.Contains</code> в цикле</td>
+<td>O(n²)</td>
+<td><code>HashSet</code></td>
+</tr>
+<tr>
+<td>Забыть про half-open интервал в бинарном поиске</td>
+<td>зацикливание</td>
+<td>аккуратно с <code>mid</code></td>
+</tr>
+</tbody></table>
+<h2>Контрольные вопросы</h2>
+<ol>
+<li>Что означает O(n²)?</li>
+<li>Когда бинарный поиск быстрее линейного?</li>
+<li>Чем Dictionary отличается от List?</li>
+<li>Зачем нужен Stack? Приведи пример.</li>
+<li>Почему пузырьковой сортировке не место в проде?</li>
+</ol>
+<h2>Дальше</h2>
+<ul>
+<li><a href="PRACTICE.md">Практика</a></li>
+<li><a href="CODE_REVIEW.md">Разбор кода</a></li>
+</ul>
+
+<h1>Практика</h1>
+<h1>Практика — Модуль 24: Алгоритмы</h1>
+<h2>Задача 1: Линейный поиск</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Реализуй <code>LinearSearch</code> и протестируй.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Возврат индекса или −1.</li>
+</ul>
+<h2>Задача 2: Бинарный поиск</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Реализуй <code>BinarySearch</code> по отсортированному массиву.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Проверь на чётном и нечётном количестве элементов.</li>
+</ul>
+<h2>Задача 3: Пузырьковая сортировка</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Реализуй <code>BubbleSort</code> и выведи результат.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Используй кортеж для обмена (<code>(a, b) = (b, a)</code>).</li>
+</ul>
+<h2>Задача 4: Уникальные элементы</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Из массива выведи только уникальные значения.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Используй <code>HashSet&lt;int&gt;</code>.</li>
+</ul>
+<h2>Задача 5: Частотный словарь</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Посчитай, сколько раз встречается каждое слово.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>Dictionary&lt;string, int&gt;</code>.</li>
+</ul>
+<h2>Задача 6: Проверка скобок</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Реализуй <code>IsBalanced</code> через Stack.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Проверь <code>&quot;([{}])&quot;</code> → true, <code>&quot;([)]&quot;</code> → false.</li>
+</ul>
+<h2>Решения</h2>
+<details>
+<summary>Задача 1 — решение</summary>
+
+<pre><code class="language-csharp">int LinearSearch(int[] arr, int target)
+{
+    for (int i = 0; i &lt; arr.Length; i++)
+        if (arr[i] == target) return i;
+    return -1;
+}
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 2 — решение</summary>
+
+<pre><code class="language-csharp">int BinarySearch(int[] sorted, int target)
+{
+    int left = 0, right = sorted.Length - 1;
+    while (left &lt;= right)
+    {
+        int mid = left + (right - left) / 2;
+        if (sorted[mid] == target) return mid;
+        if (sorted[mid] &lt; target) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
+}
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 3 — решение</summary>
+
+<pre><code class="language-csharp">void BubbleSort(int[] arr)
+{
+    for (int i = 0; i &lt; arr.Length - 1; i++)
+        for (int j = 0; j &lt; arr.Length - 1 - i; j++)
+            if (arr[j] &gt; arr[j + 1])
+                (arr[j], arr[j + 1]) = (arr[j + 1], arr[j]);
+}
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 4 — решение</summary>
+
+<pre><code class="language-csharp">var unique = new HashSet&lt;int&gt;(arr);
+foreach (var x in unique) Console.WriteLine(x);
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 5 — решение</summary>
+
+<pre><code class="language-csharp">var freq = new Dictionary&lt;string, int&gt;();
+foreach (var w in words)
+    freq[w] = freq.GetValueOrDefault(w) + 1;
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 6 — решение</summary>
+
+<pre><code class="language-csharp">bool IsBalanced(string s)
+{
+    var stack = new Stack&lt;char&gt;();
+    foreach (char c in s)
+    {
+        if (c is &#39;(&#39; or &#39;[&#39; or &#39;{&#39;) stack.Push(c);
+        else if (c is &#39;)&#39; or &#39;]&#39; or &#39;}&#39;)
+        {
+            if (stack.Count == 0) return false;
+            if ((stack.Pop(), c) is (&#39;(&#39;, &#39;)&#39;) or (&#39;[&#39;, &#39;]&#39;) or (&#39;{&#39;, &#39;}&#39;)) continue;
+            return false;
+        }
+    }
+    return stack.Count == 0;
+}
+</code></pre>
+</details>
+
+<h1>Разбор кода</h1>
+<h1>Разбор кода — Модуль 24: Алгоритмы</h1>
+<h2>Пример 1: List.Contains в цикле</h2>
+<pre><code class="language-csharp">foreach (var x in listA)
+    if (listB.Contains(x)) { /* ... */ }
+</code></pre>
+<p><strong>Проблема:</strong> O(n²) — для каждого элемента listA проходим listB.<br><strong>Как надо:</strong> <code>var setB = listB.ToHashSet();</code> и <code>setB.Contains(x)</code> → O(n).</p>
+<h2>Пример 2: Бинарный поиск по несортированному</h2>
+<p><strong>Проблема:</strong> результат неверен.<br><strong>Как надо:</strong> массив обязан быть отсортирован; проверяй или сортируй.</p>
+<h2>Пример 3: Двойной цикл вместо Dictionary</h2>
+<p><strong>Проблема:</strong> поиск пары — O(n²).<br><strong>Как надо:</strong> использовать <code>Dictionary</code>/<code>HashSet</code> для O(n).</p>
+<h2>Пример 4: Пузырьковая сортировка в проде</h2>
+<p><strong>Проблема:</strong> O(n²), медленно на больших данных.<br><strong>Как надо:</strong> <code>Array.Sort</code> или <code>OrderBy</code> (O(n log n)). Пузырьковую — только для обучения.</p>
+<h2>Вывод</h2>
+<p>Выбор структуры данных определяет сложность. Думай «что я делаю: ищу, сравниваю, храню уникально?» и выбирай Dictionary/HashSet/Stack/Queue осознанно.</p>
+
+<div class="pagebreak"></div>
+<h1>Модуль 25: Микросервисы и очереди сообщений</h1>
+<blockquote>
+<p><strong>Цель:</strong> понять, что такое микросервисы, и как сервисы общаются через очереди (RabbitMQ/Kafka).</p>
+</blockquote>
+<h2>Зачем это нужно</h2>
+<p>Крупные системы делят на микросервисы, а между ними общаются через <strong>очереди сообщений</strong>. Это позволяет не блокировать запросы и надёжно доставлять события. Тема уровня senior/архитектора.</p>
+<h2>Теория</h2>
+<h3>1. Монолит vs микросервисы</h3>
+<ul>
+<li><strong>Монолит</strong> — одно большое приложение, всё внутри.</li>
+<li><strong>Микросервисы</strong> — набор маленьких независимых сервисов, каждый со своей ответственностью (заказы, оплата, уведомления).</li>
+</ul>
+<p>Плюсы микросервисов: независимый деплой, масштабирование по частям, изоляция сбоев.<br>Минусы: сложность, сетевое взаимодействие, распределённые транзакции.</p>
+<h3>2. Как сервисы общаются</h3>
+<ul>
+<li><strong>Синхронно</strong> (HTTP/gRPC): запрос → ответ. Просто, но сервис ждёт.</li>
+<li><strong>Асинхронно</strong> (очереди): сервис отправляет событие в очередь и не ждёт. Другие сервисы читают.</li>
+</ul>
+<h3>3. Очередь сообщений</h3>
+<p>Очередь — буфер между отправителем и получателем:</p>
+<ul>
+<li>отправитель (producer) публикует сообщение;</li>
+<li>очередь хранит его;</li>
+<li>получатель (consumer) читает.</li>
+</ul>
+<p>Популярные: <strong>RabbitMQ</strong> (очереди, AMQP), <strong>Apache Kafka</strong> (логи событий, потоковая обработка).</p>
+<h3>4. Зачем очереди</h3>
+<ul>
+<li><strong>Развязка</strong>: сервисы не знают друг о друге напрямую.</li>
+<li><strong>Надёжность</strong>: сообщение хранится, даже если получатель временно недоступен.</li>
+<li><strong>Балансировка нагрузки</strong>: несколько получателей делят сообщения.</li>
+<li><strong>Масштабирование</strong>: можно добавить обработчиков.</li>
+</ul>
+<h3>5. Событийный подход (Event-driven)</h3>
+<p>Сервис публикует <strong>событие</strong> (например, <code>OrderCreated</code>). Другие сервисы подписываются и реагируют. Это развитие паттерна Observer (урок 46) на уровне системы.</p>
+<h3>6. Пример: заказ в интернет-магазине</h3>
+<ol>
+<li><code>OrderService</code> получает заказ.</li>
+<li>Публикует событие <code>OrderCreated</code> в очередь.</li>
+<li><code>PaymentService</code> и <code>NotificationService</code> читают событие и делают своё.</li>
+<li>Никто никого не ждёт синхронно.</li>
+</ol>
+<h3>7. Рекомендации</h3>
+<ul>
+<li>Не злоупотребляй микросервисами: начинай с монолита, дроби по мере роста.</li>
+<li>События делай осмысленными (имя в прошедшем времени: <code>OrderCreated</code>).</li>
+<li>Обеспечь идемпотентность обработчиков (повторная обработка не должна ломать).</li>
+</ul>
+<h2>Типичные ошибки</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Почему плохо</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Микросервисы «ради моды»</td>
+<td>сложность без выгоды</td>
+<td>начинай с монолита</td>
+</tr>
+<tr>
+<td>Синхронная цепочка вызовов</td>
+<td>медленно, хрупко</td>
+<td>событийный подход</td>
+</tr>
+<tr>
+<td>Потеря сообщений без обработки ошибок</td>
+<td>данные пропадают</td>
+<td>повторные попытки/DEAD LETTER</td>
+</tr>
+<tr>
+<td>Неконсистентные данные</td>
+<td>распределённые транзакции сложны</td>
+<td>событийная согласованность</td>
+</tr>
+</tbody></table>
+<h2>Контрольные вопросы</h2>
+<ol>
+<li>Чем микросервис отличается от монолита?</li>
+<li>Какие бывают способы общения сервисов?</li>
+<li>Что такое очередь сообщений?</li>
+<li>Зачем нужен событийный подход?</li>
+<li>Что такое идемпотентность?</li>
+</ol>
+<h2>Дальше</h2>
+<ul>
+<li><a href="PRACTICE.md">Практика</a></li>
+<li><a href="CODE_REVIEW.md">Разбор кода</a></li>
+</ul>
+
+<h1>Практика</h1>
+<h1>Практика — Модуль 25: Микросервисы</h1>
+<h2>Задача 1: Спроектируй систему</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Опиши разбиение магазина на микросервисы.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Сервисы: заказы, оплата, склад, уведомления.</li>
+<li>Кто с кем общается и как.</li>
+</ul>
+<h2>Задача 2: События</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Перечисли события для магазина.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>OrderCreated</code>, <code>PaymentCompleted</code>, <code>OrderShipped</code> и т.д.</li>
+</ul>
+<h2>Задача 3: Публикатор/подписчик на уровне кода</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Смоделируй событие <code>OrderCreated</code> через event (как в уроке 46).</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Класс <code>OrderService</code> публикует; <code>PaymentService</code>/<code>NotificationService</code> подписываются.</li>
+</ul>
+<h2>Задача 4: Модель очереди</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Опиши концептуально очередь (без реального RabbitMQ): добавление, чтение.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Очередь <code>Queue&lt;string&gt;</code> как модель буфера.</li>
+</ul>
+<h2>Задача 5: Идемпотентность</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Объясни и приведи пример идемпотентного обработчика.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Повторное событие не должно удваивать эффект (например, проверка по id).</li>
+</ul>
+<h2>Решения</h2>
+<details>
+<summary>Задача 1 — решение</summary>
+
+<pre><code>Заказы (OrderService) → события → Оплата (PaymentService), Склад (InventoryService), Уведомления (NotificationService)
+</code></pre>
+<p>Каждый сервис слушает свои события. Связь — через очередь.</p>
+</details>
+
+<details>
+<summary>Задача 2 — решение</summary>
+
+<p><code>OrderCreated</code>, <code>PaymentCompleted</code>, <code>PaymentFailed</code>, <code>OrderShipped</code>, <code>OrderCancelled</code>.</p>
+</details>
+
+<details>
+<summary>Задача 3 — решение</summary>
+
+<pre><code class="language-csharp">class OrderService
+{
+    public event EventHandler&lt;string&gt;? OrderCreated;
+    public void Create(string id)
+    {
+        Console.WriteLine($&quot;Заказ {id} создан&quot;);
+        OrderCreated?.Invoke(this, id);
+    }
+}
+
+var orders = new OrderService();
+orders.OrderCreated += (s, id) =&gt; Console.WriteLine($&quot;[Оплата] заказ {id}&quot;);
+orders.OrderCreated += (s, id) =&gt; Console.WriteLine($&quot;[Уведомление] заказ {id}&quot;);
+orders.Create(&quot;A-1&quot;);
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 4 — решение</summary>
+
+<pre><code class="language-csharp">var queue = new Queue&lt;string&gt;();
+queue.Enqueue(&quot;OrderCreated&quot;);   // producer
+var msg = queue.Dequeue();       // consumer
+</code></pre>
+<p>Модель: producer кладёт, consumer забирает.</p>
+</details>
+
+<details>
+<summary>Задача 5 — решение</summary>
+
+<p>Идемпотентность — повторная обработка даёт тот же результат. Пример: перед обработкой <code>OrderCreated</code> проверяем, обработан ли уже id (по сохранённому ключу). Если да — пропускаем.</p>
+</details>
+
+<h1>Разбор кода</h1>
+<h1>Разбор кода — Модуль 25: Микросервисы</h1>
+<h2>Пример 1: Синхронная цепочка</h2>
+<pre><code class="language-csharp">orderService.Create(order);
+paymentService.Pay(order.Id);      // ждём
+inventoryService.Reserve(order.Id); // ждём
+emailService.Send(order.Id);         // ждём
+</code></pre>
+<p><strong>Проблема:</strong> медленно, любой сбой ломает всю цепочку, сервисы жёстко связаны.<br><strong>Как надо:</strong> событийный подход: <code>Create</code> публикует <code>OrderCreated</code>, а остальные слушают независимо.</p>
+<h2>Пример 2: Потеря сообщений</h2>
+<p><strong>Проблема:</strong> если получатель упал после получения, но до обработки — сообщение потеряно.<br><strong>Как надо:</strong> подтверждать обработку (ack), повторные попытки, dead-letter очередь.</p>
+<h2>Пример 3: Неидемпотентный обработчик</h2>
+<pre><code class="language-csharp">void OnOrderCreated(string id) { deductMoney(id); } // повторно — дважды спишет
+</code></pre>
+<p><strong>Как надо:</strong> перед действием проверять, обработан ли id.</p>
+<h2>Вывод</h2>
+<p>Микросервисы — про независимость и событийную связь. Всегда думай о надёжности (повторы, идемпотентность) и не усложняй без необходимости.</p>
+
 </body></html>
