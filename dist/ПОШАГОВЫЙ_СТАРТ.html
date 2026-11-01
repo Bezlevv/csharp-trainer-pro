@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Курс C# — пошаговый старт</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+         background: #f6f8fb; color: #0f172a; margin: 0; padding: 24px 16px 60px; }
+  .wrap { max-width: 860px; margin: 0 auto; }
+  h1 { text-align: center; font-size: 26px; color: #1e3a8a; }
+  .sub { text-align: center; color: #64748b; margin-bottom: 28px; }
+  .step { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px;
+          padding: 18px 20px; margin: 16px 0; box-shadow: 0 1px 3px rgba(15,23,42,.06); }
+  .step .num { display: inline-flex; align-items: center; justify-content: center;
+          width: 34px; height: 34px; border-radius: 50%; background: #2563eb; color: #fff;
+          font-weight: 800; margin-right: 10px; }
+  .step h2 { display: inline; font-size: 19px; }
+  .step p, .step li { font-size: 15px; line-height: 1.55; color: #1e293b; }
+  .cmd { background: #f1f5f9; border-left: 4px solid #2563eb; padding: 8px 12px;
+         font-family: ui-monospace, monospace; border-radius: 0 8px 8px 0; margin: 8px 0; }
+  .tip { background: #eef2ff; border-radius: 8px; padding: 8px 12px; margin-top: 8px;
+         font-size: 14px; color: #3730a3; }
+  .ok { color: #15803d; font-weight: 700; }
+  .box { border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px 14px; margin-top: 10px; background:#fafcff; }
+  ol { padding-left: 20px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+  td, th { border: 1px solid #e2e8f0; padding: 7px 10px; font-size: 14px; text-align: left; }
+  th { background: #eef2ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🚀 Как начать курс C#</h1>
+  <div class="sub">Пошаговый гид: от распаковки до первого запущенного кода</div>
+
+  <div class="step"><span class="num">1</span><h2>Распакуй архив</h2>
+    <p>Скопируй папку курса на компьютер и распакуй ZIP. У тебя появятся файлы:
+    <b>Курс_интерактивный.html</b>, <b>Курс.pdf</b> и папка <b>Песочница</b>.</p>
+    <div class="box"><span class="ok">Ожидаем:</span> папка с этими файлами на рабочем столе.</div>
+  </div>
+
+  <div class="step"><span class="num">2</span><h2>Открой курс (без установки)</h2>
+    <p>Двойной клик по <b>Курс_интерактивный.html</b>. Откроется браузер с курсом.</p>
+    <div class="box"><span class="ok">Ожидаем:</span> слева меню, справа теория. Текст и подсветка кода отображаются.</div>
+    <div class="tip">💡 Если файл открылся «текстом» — кликни правой кнопкой → «Открыть с помощью» → браузер.</div>
+  </div>
+
+  <div class="step"><span class="num">3</span><h2>Пройди первый урок</h2>
+    <p>В меню иди по порядку: <b>План развития</b> → <b>Уровень 0</b> → урок «Что такое программа».</p>
+    <div class="box"><span class="ok">Ожидаем:</span> теория с примерами кода. Внизу — «Сделай сам» (задачи) и тест.</div>
+  </div>
+
+  <div class="step"><span class="num">4</span><h2>Проверь себя</h2>
+    <p>Найди в меню блок <b>«⚡ Интерактивные задачи»</b>. Там:
+    <b>Вопросы</b> (выбери ответ — получишь объяснение) и
+    <b>Напиши код</b> (печатай код, жми «Проверить»).</p>
+    <div class="box"><span class="ok">Ожидаем:</span> ✅/❌ и объяснение после каждого ответа.</div>
+  </div>
+
+  <div class="step"><span class="num">5</span><h2>Отмечай прогресс</h2>
+    <p>Когда прошёл раздел — нажми на кружок <b>○</b> рядом с ним (станет ✓). Вверху появится счётчик пройденного.</p>
+    <div class="box"><span class="ok">Ожидаем:</span> «Пройдено (✓): 1 из 71».</div>
+  </div>
+
+  <div class="step"><span class="num">6</span><h2>Читай PDF (по желанию)</h2>
+    <p>Открой <b>Курс.pdf</b> — та же версия для чтения с планшета/печати.</p>
+  </div>
+
+  <div class="step"><span class="num">7</span><h2>Запусти песочницу (опционально, реальный C#)</h2>
+    <p>Для запуска настоящего кода понадобятся: <b>.NET SDK 8+</b> (dotnet.microsoft.com/download) и <b>Node.js 18+</b> (nodejs.org).</p>
+    <ol>
+      <li>Открой папку <b>Песочница</b>.</li>
+      <li><b>Windows:</b> двойной клик по <b>запустить_песочницу.bat</b>.
+          <br><b>Linux/macOS:</b> терминал в этой папке → <span class="cmd">node server.js</span></li>
+      <li>Браузер откроется сам: <span class="cmd">http://localhost:8091/</span></li>
+      <li>Пиши код слева, жми <b>«▶ Запустить»</b>.</li>
+    </ol>
+    <div class="box"><span class="ok">Ожидаем:</span> через 2–7 секунд появится вывод программы.</div>
+    <div class="tip">⏱ Долго в первый раз — это нормально (компиляция).</div>
+  </div>
+
+  <div class="step"><span class="num">8</span><h2>Если что-то не так</h2>
+    <table>
+      <tr><th>Проблема</th><th>Решение</th></tr>
+      <tr><td>localhost:8091 не открывается</td><td>сервер не запущен — запусти батник / node server.js</td></tr>
+      <tr><td>«node не найден»</td><td>установи Node.js</td></tr>
+      <tr><td>«dotnet не найден»</td><td>установи .NET SDK</td></tr>
+      <tr><td>Нашёл ошибку в уроке</td><td>просто иди дальше или исправь у себя</td></tr>
+    </table>
+  </div>
+
+  <div class="tip" style="text-align:center; font-size:16px; margin-top:24px;">
+    Удачи! 💪 Делай по одному шагу за раз — и всё получится.
+  </div>
+</div>
+</body>
+</html>
