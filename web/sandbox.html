@@ -55,6 +55,8 @@ Console.WriteLine("Сумма 2+3 = " + (2 + 3));</textarea>
         <button id="tpl5" class="tpls">try/catch</button>
         <button id="tpl6" class="tpls">строки/массивы</button>
         <button id="tpl7" class="tpls">рекурсия</button>
+        <button id="tpl8" class="tpls">null-безопасность</button>
+        <button id="tpl9" class="tpls">Random/Guid</button>
       </div>
       <div class="meta">Запуск — реальная компиляция через <code>dotnet build</code> + исполнение (2–7 секунд). Примечание: <code>Console.ReadLine()</code> в песочнице не поддерживается.</div>
     </div>
@@ -76,7 +78,9 @@ Console.WriteLine("Сумма 2+3 = " + (2 + 3));</textarea>
       tpl3: "var nums = new[] { 10, 3, 7, 2 };\nvar big = nums.Where(n => n > 4).OrderByDescending(n => n);\nConsole.WriteLine(string.Join(\", \", big));",
       tpl5: "try\n{\n    int x = int.Parse(\"пять\");\n    Console.WriteLine(x);\n}\ncatch (FormatException)\n{\n    Console.WriteLine(\"Это не число!\");\n}",
       tpl6: "string s = \"C# — это круто\";\nConsole.WriteLine(\"Длина: \" + s.Length);\nConsole.WriteLine(\"Верхний регистр: \" + s.ToUpper());\nvar words = s.Split(' ');\nConsole.WriteLine(\"Слов: \" + words.Length);",
-      tpl7: "Console.WriteLine(Factorial(5));\n\nint Factorial(int n) => n <= 1 ? 1 : n * Factorial(n - 1);"
+      tpl7: "Console.WriteLine(Factorial(5));\n\nint Factorial(int n) => n <= 1 ? 1 : n * Factorial(n - 1);",
+      tpl8: "string? line = Console.ReadLine();\nConsole.WriteLine(\"Вы ввели: \" + (line?.Trim() ?? \"(пусто)\"));",
+      tpl9: "Console.WriteLine(\"Случайное 1..100: \" + Random.Shared.Next(1, 101));\nConsole.WriteLine(\"Guid: \" + Guid.NewGuid());"
     };
     Object.keys(templates).forEach((id) => {
       $("#" + id).onclick = () => { code.value = templates[id]; out.textContent = "— код заменён, нажми Запустить —"; out.className = ""; meta.textContent = ""; };

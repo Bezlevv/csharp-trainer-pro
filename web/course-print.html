@@ -2215,6 +2215,153 @@ Console.WriteLine(a[5]);   // IndexOutOfRangeException
 </ul>
 
 <div class="pagebreak"></div>
+<h1>Урок 18. Структура проекта и пространства имён</h1>
+<h2>Цель</h2>
+<p>Понять, как устроен проект на диске, что такое namespace и как организовать код в файлы.</p>
+<h2>Словарик новых слов</h2>
+<ul>
+<li><strong>Проект</strong> — папка с кодом и файл <code>.csproj</code> (настройки).</li>
+<li><strong>Namespace (пространство имён)</strong> — «папка» для имён классов, чтобы они не конфликтовали.</li>
+<li><strong><code>using</code></strong> — «подключить» пространство имён, чтобы не писать его целиком.</li>
+<li><strong>Solution (.sln)</strong> — объединение нескольких проектов.</li>
+</ul>
+<h2>Теория «с нуля»</h2>
+<h3>Аналогия: квартира и адрес</h3>
+<p>Представь, что классы — это жильцы. У них есть имена, но «Иван» может быть в разных домах. Адрес (namespace) уточняет, где именно живёт «Иван». Без адресов была бы неразбериха.</p>
+<h3>Как выглядит проект на диске</h3>
+<pre><code>MyApp/
+├── MyApp.csproj     # настройки: целевая версия .NET и т.п.
+├── Program.cs        # входная точка
+├── Utils.cs          # ещё один файл с кодом
+└── bin/ obj/         # результат сборки (генерируется, в git не нужен)
+</code></pre>
+<h3>Зачем namespace</h3>
+<p>Сгруппировать логически связанные классы и избежать пересечения имён:</p>
+<pre><code class="language-csharp">namespace MyApp.Helpers
+{
+    public static class MathUtils
+    {
+        public static int Double(int x) =&gt; x * 2;
+    }
+}
+</code></pre>
+<h3>using — подключение</h3>
+<p>Чтобы использовать класс, либо пишем полное имя, либо подключаем через <code>using</code>:</p>
+<pre><code class="language-csharp">using MyApp.Helpers;
+
+int result = MathUtils.Double(5);
+</code></pre>
+<h3>Файлы и namespace</h3>
+<p>Хорошая практика: каждый публичный класс — в отдельном файле, папки повторяют namespace:</p>
+<pre><code>Utils/
+  MathUtils.cs   → namespace MyApp.Helpers
+</code></pre>
+<h3>ImplicitUsings</h3>
+<p>В современных проектах часть стандартных <code>using</code> (например, <code>System</code>) подключается автоматически (флаг <code>&lt;ImplicitUsings&gt;enable&lt;/ImplicitUsings&gt;</code> в csproj).</p>
+<h2>Примеры</h2>
+<pre><code class="language-csharp">// Utils/MathUtils.cs
+namespace MyApp.Helpers;
+
+public static class MathUtils
+{
+    public static int Add(int a, int b) =&gt; a + b;
+}
+</code></pre>
+<pre><code class="language-csharp">// Program.cs
+using MyApp.Helpers;
+Console.WriteLine(MathUtils.Add(2, 3));   // 5
+</code></pre>
+<h2>Сделай сам (задачи с подсказками)</h2>
+<ol>
+<li>Создай класс в namespace <code>MyApp.Helpers</code> с методом <code>Triple(int)</code>.<br><em>Подсказка: <code>namespace MyApp.Helpers { public static class ... }</code></em></li>
+<li>Подключи этот namespace через <code>using</code> и вызови метод.<br><em>Подсказка: <code>using MyApp.Helpers;</code> в начале файла.</em></li>
+<li>Разложи два класса по разным файлам и namespace.<br><em>Подсказка: один класс — один файл.</em></li>
+<li>Объясни, зачем нужен namespace, на примере двух классов с одним именем.<br><em>Подсказка: разные namespace → нет конфликта.</em></li>
+</ol>
+<h2>Разбор типичных ошибок</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Что не так</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Забыл <code>using</code></td>
+<td>имя не найдено</td>
+<td>добавь <code>using</code> или пиши полное имя</td>
+</tr>
+<tr>
+<td>Всё в одном файле</td>
+<td>трудно ориентироваться</td>
+<td>один публичный класс — один файл</td>
+</tr>
+<tr>
+<td>Папки не соответствуют namespace</td>
+<td>путаница</td>
+<td>держи папки и namespace согласованными</td>
+</tr>
+<tr>
+<td>Забыл <code>;</code> после namespace</td>
+<td>ошибка компиляции</td>
+<td><code>namespace ...;</code></td>
+</tr>
+</tbody></table>
+<h2>Тест — проверь себя</h2>
+<p><strong>Вопрос 1.</strong> Что такое namespace?</p>
+<ul>
+<li>A) Тип данных.</li>
+<li>B) «Пространство имён» — группировка имён классов.</li>
+<li>C) Папка на диске.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: namespace логически группирует имена.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Это не тип.</li>
+<li>C — Необязательно совпадает с папкой, хотя принято.</li>
+</ul>
+<p><strong>Вопрос 2.</strong> Зачем <code>using MyApp.Helpers;</code>?</p>
+<ul>
+<li>A) Чтобы создать проект.</li>
+<li>B) Чтобы не писать полное имя класса каждый раз.</li>
+<li>C) Чтобы удалить namespace.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: using подключает пространство имён.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Это не создание проекта.</li>
+<li>C — Это не удаление.</li>
+</ul>
+<p><strong>Вопрос 3.</strong> Что хранит файл <code>.csproj</code>?</p>
+<ul>
+<li>A) Исходный код.</li>
+<li>B) Настройки проекта (целевая версия .NET и т.п.).</li>
+<li>C) Готовую программу.</li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: csproj — это «паспорт» проекта.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Код — в .cs файлах.</li>
+<li>C — Готовая программа — в bin/.</li>
+</ul>
+<p><strong>Вопрос 4.</strong> Что обычно игнорируется в git?</p>
+<ul>
+<li>A) <code>Program.cs</code></li>
+<li>B) <code>bin/</code> и <code>obj/</code></li>
+<li>C) <code>*.csproj</code></li>
+</ul>
+<p>✅ <strong>Верно: B.</strong><br>Почему: bin/obj — результат сборки, они генерируются.<br>Почему неверны остальные:</p>
+<ul>
+<li>A — Program.cs — исходник, хранится.</li>
+<li>C — csproj — исходник, хранится.</li>
+</ul>
+<h2>Итог урока</h2>
+<ul>
+<li>Проект = папка + <code>csproj</code> + исходники.</li>
+<li><code>namespace</code> — группировка имён; <code>using</code> — подключение.</li>
+<li>Один публичный класс — один файл; папки ~ namespace.</li>
+<li><code>bin/ obj/</code> — в <code>.gitignore</code>.</li>
+</ul>
+
+<div class="pagebreak"></div>
 <h1>Урок 20. Классы и объекты</h1>
 <h2>Цель</h2>
 <p>Понять главную идею ООП — «класс» и «объект» — и создать свой первый класс.</p>

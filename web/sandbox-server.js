@@ -8,12 +8,12 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const { execFile } = require("child_process");
 
 const WEB = __dirname; // .../web
 const PORT = Number(process.env.PORT) || 8091;
-const TMP = process.env.SANDBOX_TMP ||
-  "C:\\Users\\mnttm\\AppData\\Local\\Temp\\opencode\\sandbox";
+const TMP = process.env.SANDBOX_TMP || path.join(os.tmpdir(), "csharp-sandbox");
 const DOTNET = "dotnet";
 
 const EXT_TYPES = {
