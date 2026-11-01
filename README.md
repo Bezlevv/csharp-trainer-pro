@@ -94,6 +94,9 @@ node web/sandbox-server.js
 | 23 | [Собеседование и повторение](modules/23-interview/README.md) | карта повторения, типичные вопросы | [теория](modules/23-interview/README.md) | [практика](modules/23-interview/PRACTICE.md) | [разбор](modules/23-interview/CODE_REVIEW.md) |
 | 24 | [Алгоритмы и структуры данных](modules/24-algorithms/README.md) | Big O, поиск, сортировка, Stack/Queue/HashSet | [теория](modules/24-algorithms/README.md) | [практика](modules/24-algorithms/PRACTICE.md) | [разбор](modules/24-algorithms/CODE_REVIEW.md) |
 | 25 | [Микросервисы и очереди](modules/25-microservices/README.md) | монолит vs микросервисы, событийный подход | [теория](modules/25-microservices/README.md) | [практика](modules/25-microservices/PRACTICE.md) | [разбор](modules/25-microservices/CODE_REVIEW.md) |
+| 26 | [Производительность .NET](modules/26-performance/README.md) | BenchmarkDotNet, оптимизация, O-нотация | [теория](modules/26-performance/README.md) | [практика](modules/26-performance/PRACTICE.md) | [разбор](modules/26-performance/CODE_REVIEW.md) |
+| 27 | [Интеграционные и E2E-тесты](modules/27-integration-testing/README.md) | WebApplicationFactory, in-memory БД, Playwright | [теория](modules/27-integration-testing/README.md) | [практика](modules/27-integration-testing/PRACTICE.md) | [разбор](modules/27-integration-testing/CODE_REVIEW.md) |
+| 28 | [Шпаргалка: CLI и Git](modules/28-cheatsheet/README.md) | dotnet CLI, EF, git-команды | [теория](modules/28-cheatsheet/README.md) | [практика](modules/28-cheatsheet/PRACTICE.md) | [разбор](modules/28-cheatsheet/CODE_REVIEW.md) |
 
 ## 🏁 Итоговый проект
 

@@ -17158,4 +17158,685 @@ emailService.Send(order.Id);         // ждём
 <h2>Вывод</h2>
 <p>Микросервисы — про независимость и событийную связь. Всегда думай о надёжности (повторы, идемпотентность) и не усложняй без необходимости.</p>
 
+<div class="pagebreak"></div>
+<h1>Модуль 26: Производительность .NET и BenchmarkDotNet</h1>
+<blockquote>
+<p><strong>Цель:</strong> научиться находить узкие места и измерять производительность, не полагаясь на «чутьё».</p>
+</blockquote>
+<h2>Зачем это нужно</h2>
+<p>Оптимизировать «на глаз» — плохо. Нужно измерять. BenchmarkDotNet — стандарт бенчмарков в .NET: он аккуратно замеряет время и память, чтобы ты принимал решения на цифрах.</p>
+<h2>Теория</h2>
+<h3>1. Сначала измеряй</h3>
+<p>Не оптимизируй заранее. Сначала найди реальное узкое место (профилирование, бенчмарк), потом меняй.</p>
+<h3>2. Типичные причины медлительности</h3>
+<table>
+<thead>
+<tr>
+<th>Причина</th>
+<th>Почему</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>O(n²) из-за <code>List.Contains</code>/вложенных циклов</td>
+<td>лишний перебор</td>
+</tr>
+<tr>
+<td>Конкатенация строк в цикле</td>
+<td>создаётся много промежуточных строк</td>
+</tr>
+<tr>
+<td>«Тяжёлые» вызовы в цикле</td>
+<td>повторные вычисления</td>
+</tr>
+<tr>
+<td>Синхронные вызовы</td>
+<td>блокируют поток</td>
+</tr>
+<tr>
+<td>Аллокации в горячем цикле</td>
+<td>давление на GC</td>
+</tr>
+</tbody></table>
+<h3>3. Правильные инструменты</h3>
+<table>
+<thead>
+<tr>
+<th>Инструмент</th>
+<th>Для чего</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Stopwatch</code></td>
+<td>быстрая грубая проверка</td>
+</tr>
+<tr>
+<td>BenchmarkDotNet</td>
+<td>точные бенчмарки</td>
+</tr>
+<tr>
+<td>dotnet-trace / dotnet-counters</td>
+<td>профилирование, метрики</td>
+</tr>
+</tbody></table>
+<h3>4. Замена List.Contains на HashSet</h3>
+<pre><code class="language-csharp">// Плохо: O(n²)
+foreach (var x in listA)
+    if (listB.Contains(x)) { }   // O(n) на каждую проверку
+
+// Хорошо: O(n)
+var setB = listB.ToHashSet();
+foreach (var x in listA)
+    if (setB.Contains(x)) { }
+</code></pre>
+<h3>5. StringBuilder вместо конкатенации</h3>
+<pre><code class="language-csharp">// Плохо (много строк):
+string s = &quot;&quot;;
+for (int i = 0; i &lt; 10000; i++) s += i;
+
+// Хорошо:
+var sb = new System.Text.StringBuilder();
+for (int i = 0; i &lt; 10000; i++) sb.Append(i);
+string result = sb.ToString();
+</code></pre>
+<h3>6. BenchmarkDotNet — пример</h3>
+<pre><code class="language-csharp">[MemoryDiagnoser]
+public class Benchmarks
+{
+    [Benchmark]
+    public int SumList()
+    {
+        var list = Enumerable.Range(1, 10000).ToList();
+        return list.Sum();
+    }
+}
+</code></pre>
+<p>Запуск: <code>dotnet run -c Release</code> — BenchmarkDotNet сам прогонит много раз и даст отчёт.</p>
+<h3>7. Асинхронность и нагрузка</h3>
+<p>Не блокируй поток (<code>Wait()</code>/<code>.Result</code>). Используй <code>async/await</code>.</p>
+<h2>Типичные ошибки</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Почему плохо</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Оптимизация без замеров</td>
+<td>тратишь время не туда</td>
+<td>сначала бенчмарк</td>
+</tr>
+<tr>
+<td>Debug-сборка для замеров</td>
+<td>нерепрезентативно</td>
+<td>Release</td>
+</tr>
+<tr>
+<td>Конкатенация в цикле</td>
+<td>O(n²) строк</td>
+<td>StringBuilder</td>
+</tr>
+<tr>
+<td>List.Contains в цикле</td>
+<td>O(n²)</td>
+<td>HashSet</td>
+</tr>
+</tbody></table>
+<h2>Контрольные вопросы</h2>
+<ol>
+<li>Почему сначала измерять?</li>
+<li>Чем BenchmarkDotNet лучше Stopwatch?</li>
+<li>Почему <code>string +=</code> в цикле — медленно?</li>
+<li>Как перевести O(n²) в O(n) в поиске?</li>
+<li>Зачем Release-сборка для бенчмарков?</li>
+</ol>
+<h2>Дальше</h2>
+<ul>
+<li><a href="PRACTICE.md">Практика</a></li>
+<li><a href="CODE_REVIEW.md">Разбор кода</a></li>
+</ul>
+
+<h1>Практика</h1>
+<h1>Практика — Модуль 26: Производительность</h1>
+<h2>Задача 1: Замер скорости</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Используй <code>Stopwatch</code>, чтобы замерить время заполнения списка.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>Stopwatch.StartNew()</code>, <code>ElapsedMilliseconds</code>.</li>
+</ul>
+<h2>Задача 2: List → HashSet</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Перепиши поиск пересечения двух списков через HashSet.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Покажи результат.</li>
+</ul>
+<h2>Задача 3: StringBuilder</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Собери строку из 1000 чисел через StringBuilder (вместо +=).</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>using System.Text;</code>.</li>
+</ul>
+<h2>Задача 4: Простой BenchmarkDotNet</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Напиши класс с <code>[Benchmark]</code> и запусти в Release.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Пакет <code>BenchmarkDotNet</code>.</li>
+<li><code>[MemoryDiagnoser]</code>.</li>
+</ul>
+<h2>Задача 5: Найди узкое место</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Дан код с <code>List.Contains</code> в цикле. Перепиши, замерь до/после.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Stopwatch до и после.</li>
+</ul>
+<h2>Решения</h2>
+<details>
+<summary>Задача 1 — решение</summary>
+
+<pre><code class="language-csharp">var sw = Stopwatch.StartNew();
+var list = new List&lt;int&gt;();
+for (int i = 0; i &lt; 100000; i++) list.Add(i);
+sw.Stop();
+Console.WriteLine($&quot;{sw.ElapsedMilliseconds} мс&quot;);
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 2 — решение</summary>
+
+<pre><code class="language-csharp">var setB = listB.ToHashSet();
+var common = listA.Where(setB.Contains).ToList();
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 3 — решение</summary>
+
+<pre><code class="language-csharp">var sb = new StringBuilder();
+for (int i = 0; i &lt; 1000; i++) sb.Append(i);
+Console.WriteLine(sb.ToString());
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 4 — решение</summary>
+
+<pre><code class="language-csharp">[MemoryDiagnoser]
+public class Bench
+{
+    [Benchmark]
+    public int Sum() =&gt; Enumerable.Range(1, 10000).Sum();
+}
+</code></pre>
+<p>Запуск: <code>dotnet run -c Release</code>.</p>
+</details>
+
+<details>
+<summary>Задача 5 — решение</summary>
+
+<p>До: <code>foreach (var x in a) if (b.Contains(x)) ...</code> — O(n²).<br>После: <code>var sb = b.ToHashSet();</code> и <code>sb.Contains(x)</code> — O(n). Замерь оба Stopwatch&#39;ем.</p>
+</details>
+
+<h1>Разбор кода</h1>
+<h1>Разбор кода — Модуль 26: Производительность</h1>
+<h2>Пример 1: Оптимизация без замеров</h2>
+<p><strong>Проблема:</strong> меняем «что-то» наугад, не зная узкое место.<br><strong>Как надо:</strong> сначала профилирование/бенчмарк — потом правка.</p>
+<h2>Пример 2: string += в цикле</h2>
+<pre><code class="language-csharp">string s = &quot;&quot;;
+for (int i = 0; i &lt; 100000; i++) s += i;
+</code></pre>
+<p><strong>Проблема:</strong> каждая конкатенация создаёт новую строку — O(n²) памяти/времени.<br><strong>Как надо:</strong> StringBuilder.</p>
+<h2>Пример 3: List.Contains в горячем цикле</h2>
+<pre><code class="language-csharp">bool found = false;
+foreach (var x in bigList)
+    if (otherList.Contains(x)) { found = true; break; }
+</code></pre>
+<p><strong>Проблема:</strong> O(n²).<br><strong>Как надо:</strong> HashSet → O(n).</p>
+<h2>Пример 4: Замеры в Debug</h2>
+<p><strong>Проблема:</strong> Debug-сборка — без оптимизаций, цифры нерепрезентативны.<br><strong>Как надо:</strong> Release.</p>
+<h2>Вывод</h2>
+<p>Измеряй (BenchmarkDotNet/Stopwatch в Release), ищи O(n²)/строки/аллокации и переводи в эффективные структуры. Не оптимизируй вслепую.</p>
+
+<div class="pagebreak"></div>
+<h1>Модуль 27: Интеграционное и E2E-тестирование</h1>
+<blockquote>
+<p><strong>Цель:</strong> понять иерархию тестов и как тестировать взаимодействие с БД/API/браузером.</p>
+</blockquote>
+<h2>Зачем это нужно</h2>
+<p>Юнит-тесты проверяют «кирпичики». Но целое тоже должно работать: интеграционные тесты проверяют связку (БД + API), E2E — полный сценарий пользователя. Это следующий уровень надёжности.</p>
+<h2>Теория</h2>
+<h3>1. Пирамида тестов</h3>
+<pre><code>       /\  E2E (мало, дорого)
+      /  \
+     /    \  Интеграционные (средне)
+    /      \
+   /________\  Юнит (много, быстро)
+</code></pre>
+<ul>
+<li>Юнит: изолированно, быстро.</li>
+<li>Интеграционные: БД, API, очереди — несколько компонентов вместе.</li>
+<li>E2E: браузер/пользовательский сценарий.</li>
+</ul>
+<h3>2. Интеграционные тесты API (WebApplicationFactory)</h3>
+<p>Проверяют настоящий запрос через весь конвейер ASP.NET Core:</p>
+<pre><code class="language-csharp">public class ApiTests
+{
+    [Fact]
+    public async Task Get_Returns200()
+    {
+        using var factory = new WebApplicationFactory&lt;Program&gt;();
+        using var client = factory.CreateClient();
+
+        var res = await client.GetAsync(&quot;/api/tasks&quot;);
+        Assert.Equal(System.Net.HttpStatusCode.OK, res.StatusCode);
+    }
+}
+</code></pre>
+<h3>3. Интеграционные тесты с БД</h3>
+<p>Вместо реальной БД — <strong>in-memory</strong> (EF Core) или Testcontainers (реальная БД в контейнере):</p>
+<pre><code class="language-csharp">var options = new DbContextOptionsBuilder&lt;AppDbContext&gt;()
+    .UseInMemoryDatabase(Guid.NewGuid().ToString())
+    .Options;
+</code></pre>
+<h3>4. E2E (браузер): Playwright</h3>
+<p>Полный пользовательский сценарий:</p>
+<pre><code class="language-csharp">using var page = await browser.NewPageAsync();
+await page.GotoAsync(&quot;http://localhost:5000&quot;);
+await page.ClickAsync(&quot;#submit&quot;);
+await page.WaitForSelectorAsync(&quot;#result&quot;);
+</code></pre>
+<h3>5. Smoke-тесты</h3>
+<p>Быстрая проверка «собирается и живо»: <code>dotnet test --filter Category=Smoke</code>.</p>
+<h3>6. Что покрывать</h3>
+<ul>
+<li>Главные сценарии пользователя.</li>
+<li>Критические потоки (оплата, заказ).</li>
+<li>Граничные случаи бизнес-логики.</li>
+</ul>
+<h2>Типичные ошибки</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Почему плохо</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>E2E на всё подряд</td>
+<td>медленно и хрупко</td>
+<td>только ключевые сценарии</td>
+</tr>
+<tr>
+<td>Интеграционные на реальную БД без изоляции</td>
+<td>зависят от окружения</td>
+<td>in-memory / Testcontainers</td>
+</tr>
+<tr>
+<td>Юнит-тест лезет в сеть/БД</td>
+<td>медленно, нестабильно</td>
+<td>моки</td>
+</tr>
+<tr>
+<td>Нет smoke-тестов</td>
+<td>долгий фидбек</td>
+<td>быстрый smoke-набор</td>
+</tr>
+</tbody></table>
+<h2>Контрольные вопросы</h2>
+<ol>
+<li>Что такое пирамида тестов?</li>
+<li>Что проверяют интеграционные тесты?</li>
+<li>Зачем WebApplicationFactory?</li>
+<li>Чем E2E отличается от юнит?</li>
+<li>Что такое smoke-тесты?</li>
+</ol>
+<h2>Дальше</h2>
+<ul>
+<li><a href="PRACTICE.md">Практика</a></li>
+<li><a href="CODE_REVIEW.md">Разбор кода</a></li>
+</ul>
+
+<h1>Практика</h1>
+<h1>Практика — Модуль 27: Интеграционные и E2E-тесты</h1>
+<h2>Задача 1: WebApplicationFactory</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Напиши интеграционный тест: GET /api/tasks → 200.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Пакет <code>Microsoft.AspNetCore.Mvc.Testing</code>.</li>
+</ul>
+<h2>Задача 2: In-memory БД</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Тест для EF-контекста на in-memory БД.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>UseInMemoryDatabase</code>.</li>
+</ul>
+<h2>Задача 3: Smoke-набор</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Пометь «смоук»-тесты атрибутом Trait.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Запуск: <code>dotnet test --filter Category=Smoke</code>.</li>
+</ul>
+<h2>Задача 4: Проверка POST</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Интеграционный тест: POST /api/tasks создаёт задачу (201).</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>PostAsJsonAsync</code>.</li>
+</ul>
+<h2>Задача 5: Пирамида на своём проекте</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Для модуля 15 (TaskTracker) опиши, какие тесты куда отнести.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Юнит: TaskService. Интеграционные: хранилище. E2E: не обязательно.</li>
+</ul>
+<h2>Решения</h2>
+<details>
+<summary>Задача 1 — решение</summary>
+
+<pre><code class="language-csharp">[Fact]
+public async Task Get_Returns200()
+{
+    using var factory = new WebApplicationFactory&lt;Program&gt;();
+    using var client = factory.CreateClient();
+    var res = await client.GetAsync(&quot;/api/tasks&quot;);
+    Assert.Equal(HttpStatusCode.OK, res.StatusCode);
+}
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 2 — решение</summary>
+
+<pre><code class="language-csharp">var options = new DbContextOptionsBuilder&lt;AppDbContext&gt;()
+    .UseInMemoryDatabase(Guid.NewGuid().ToString())
+    .Options;
+await using var db = new AppDbContext(options);
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 3 — решение</summary>
+
+<pre><code class="language-csharp">[Trait(&quot;Category&quot;, &quot;Smoke&quot;)]
+[Fact]
+public void Build_Smoke() { /* быстрая проверка */ }
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 4 — решение</summary>
+
+<pre><code class="language-csharp">var res = await client.PostAsJsonAsync(&quot;/api/tasks&quot;, new { title = &quot;Тест&quot; });
+Assert.Equal(HttpStatusCode.Created, res.StatusCode);
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 5 — решение</summary>
+
+<ul>
+<li>Юнит: <code>TaskService</code> (валидация, создание, статусы).</li>
+<li>Интеграционные: <code>JsonTaskRepository</code> (файл).</li>
+<li>E2E: не обязателен для консольного приложения.</details></li>
+</ul>
+
+<h1>Разбор кода</h1>
+<h1>Разбор кода — Модуль 27: Тестирование</h1>
+<h2>Пример 1: E2E на всё</h2>
+<p><strong>Проблема:</strong> сотни браузерных тестов — медленно, хрупко.<br><strong>Как надо:</strong> пирамида: много юнит, меньше интеграционных, несколько ключевых E2E.</p>
+<h2>Пример 2: Реальная БД в тестах</h2>
+<p><strong>Проблема:</strong> тесты зависят от окружения и ломают данные.<br><strong>Как надо:</strong> in-memory или Testcontainers (изолированный контейнер).</p>
+<h2>Пример 3: Юнит лезет в сеть</h2>
+<p><strong>Проблема:</strong> нестабильно, медленно.<br><strong>Как надо:</strong> моки на границах.</p>
+<h2>Вывод</h2>
+<p>Сбалансируй пирамиду: юнит-база, интеграционные на ключевые связки, минимум E2E. Изолируй внешние зависимости.</p>
+
+<div class="pagebreak"></div>
+<h1>Модуль 28: Шпаргалка — команды .NET CLI и Git</h1>
+<blockquote>
+<p><strong>Цель:</strong> собрать самые нужные команды в одно место для быстрой справки.</p>
+</blockquote>
+<h2>.NET CLI</h2>
+<table>
+<thead>
+<tr>
+<th>Задача</th>
+<th>Команда</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Создать консольный проект</td>
+<td><code>dotnet new console -n MyApp</code></td>
+</tr>
+<tr>
+<td>Создать решение</td>
+<td><code>dotnet new sln -n MyApp</code></td>
+</tr>
+<tr>
+<td>Добавить проект в решение</td>
+<td><code>dotnet sln add src/MyApp/MyApp.csproj</code></td>
+</tr>
+<tr>
+<td>Создать проект тестов</td>
+<td><code>dotnet new xunit -n MyApp.Tests</code></td>
+</tr>
+<tr>
+<td>Добавить ссылку на проект</td>
+<td><code>dotnet add MyApp.Tests reference src/MyApp</code></td>
+</tr>
+<tr>
+<td>Добавить пакет NuGet</td>
+<td><code>dotnet add package Newtonsoft.Json</code></td>
+</tr>
+<tr>
+<td>Собрать</td>
+<td><code>dotnet build</code></td>
+</tr>
+<tr>
+<td>Запустить</td>
+<td><code>dotnet run</code></td>
+</tr>
+<tr>
+<td>Запустить тесты</td>
+<td><code>dotnet test</code></td>
+</tr>
+<tr>
+<td>Тесты только smoke</td>
+<td><code>dotnet test --filter Category=Smoke</code></td>
+</tr>
+<tr>
+<td>Публикация</td>
+<td><code>dotnet publish -c Release -o out</code></td>
+</tr>
+</tbody></table>
+<h2>EF Core</h2>
+<table>
+<thead>
+<tr>
+<th>Задача</th>
+<th>Команда</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Установить инструмент</td>
+<td><code>dotnet tool install --global dotnet-ef</code></td>
+</tr>
+<tr>
+<td>Создать миграцию</td>
+<td><code>dotnet ef migrations add InitialCreate</code></td>
+</tr>
+<tr>
+<td>Применить миграции</td>
+<td><code>dotnet ef database update</code></td>
+</tr>
+</tbody></table>
+<h2>Git</h2>
+<table>
+<thead>
+<tr>
+<th>Задача</th>
+<th>Команда</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Посмотреть статус</td>
+<td><code>git status</code></td>
+</tr>
+<tr>
+<td>Индексировать всё</td>
+<td><code>git add -A</code></td>
+</tr>
+<tr>
+<td>Коммит</td>
+<td><code>git commit -m &quot;feat: ...&quot;</code></td>
+</tr>
+<tr>
+<td>Ветка</td>
+<td><code>git switch -c feature/x</code></td>
+</tr>
+<tr>
+<td>Слияние</td>
+<td><code>git merge feature/x</code></td>
+</tr>
+<tr>
+<td>Обновить от origin</td>
+<td><code>git pull --rebase origin main</code></td>
+</tr>
+<tr>
+<td>ЗапушИТ</td>
+<td><code>git push -u origin main</code></td>
+</tr>
+<tr>
+<td>Откатить опубликованное</td>
+<td><code>git revert &lt;sha&gt;</code></td>
+</tr>
+</tbody></table>
+<h2>Полезные приёмы</h2>
+<ul>
+<li><code>git log --oneline --graph</code> — наглядная история.</li>
+<li><code>dotnet format</code> — форматирование.</li>
+<li><code>gh pr create</code> — создание pull request в GitHub CLI.</li>
+</ul>
+<h2>Типичные ошибки</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Решение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>dotnet test</code> не находит проект</td>
+<td>добавь тестовый проект в решение</td>
+</tr>
+<tr>
+<td>Пуш без <code>-u</code> в первый раз</td>
+<td><code>git push -u origin main</code></td>
+</tr>
+<tr>
+<td>Миграция не видна</td>
+<td>проверь <code>dotnet ef</code> установлен</td>
+</tr>
+</tbody></table>
+<h2>Контрольные вопросы</h2>
+<ol>
+<li>Команда создания консольного проекта?</li>
+<li>Команда добавления пакета?</li>
+<li>Команда запуска тестов?</li>
+<li>Команда создания миграции?</li>
+<li>Команда revert?</li>
+</ol>
+<h2>Дальше</h2>
+<ul>
+<li><a href="PRACTICE.md">Практика</a></li>
+<li><a href="CODE_REVIEW.md">Разбор кода</a></li>
+</ul>
+
+<h1>Практика</h1>
+<h1>Практика — Модуль 28: Шпаргалка</h1>
+<h2>Задача 1: Мини-проект</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Создай консольный проект и добавь его в решение.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>dotnet new console</code>, <code>dotnet new sln</code>, <code>dotnet sln add</code>.</li>
+</ul>
+<h2>Задача 2: Тесты</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Добавь тестовый проект и запусти <code>dotnet test</code>.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>ссылка на основной проект.</li>
+</ul>
+<h2>Задача 3: Пакет</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Добавь пакет <code>Newtonsoft.Json</code>.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>dotnet add package</code>.</li>
+</ul>
+<h2>Задача 4: Публикация</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Опубликуй в <code>out</code>.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>dotnet publish -c Release -o out</code>.</li>
+</ul>
+<h2>Задача 5: Ми (ция</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Для EF-проекта создай миграцию.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>dotnet ef migrations add InitialCreate</code> (нужен EF-проект).</li>
+</ul>
+<h2>Решения</h2>
+<details>
+<summary>Задача 1 — решение</summary>
+
+<pre><code class="language-bash">dotnet new console -n MyApp
+dotnet new sln -n MyApp
+dotnet sln add MyApp/MyApp.csproj
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 2 — решение</summary>
+
+<pre><code class="language-bash">dotnet new xunit -n MyApp.Tests
+dotnet add MyApp.Tests reference MyApp/MyApp.csproj
+dotnet sln add MyApp.Tests/MyApp.Tests.csproj
+dotnet test
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 3 — решение</summary>
+
+<pre><code class="language-bash">dotnet add package Newtonsoft.Json
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 4 — решение</summary>
+
+<pre><code class="language-bash">dotnet publish -c Release -o out
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 5 — решение</summary>
+
+<pre><code class="language-bash">dotnet tool install --global dotnet-ef
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+</code></pre>
+</details>
+
+<h1>Разбор кода</h1>
+<h1>Разбор кода — Модуль 28: Шпаргалка</h1>
+<h2>Пример 1: dotnet test не видит тесты</h2>
+<p><strong>Проблема:</strong> тестовый проект не добавлен в решение.<br><strong>Как надо:</strong> <code>dotnet sln add ...</code>.</p>
+<h2>Пример 2: Первый push без -u</h2>
+<p><strong>Проблема:</strong> ветка не отслеживается.<br><strong>Как надо:</strong> <code>git push -u origin main</code>.</p>
+<h2>Пример 3: Миграция «не найдена»</h2>
+<p><strong>Проблема:</strong> не установлен dotnet-ef.<br><strong>Как надо:</strong> <code>dotnet tool install --global dotnet-ef</code>.</p>
+<h2>Вывод</h2>
+<p>Шпаргалка — это то, что реально используется каждый день. Держи её под рукой, пока команды не войдут в привычку.</p>
+
 </body></html>
