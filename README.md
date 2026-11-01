@@ -74,6 +74,7 @@ node web/sandbox-server.js
 | 04 | [ООП: классы и инкапсуляция](modules/04-oop-basics/README.md) | классы, свойства, конструкторы, static | [теория](modules/04-oop-basics/README.md) | [практика](modules/04-oop-basics/PRACTICE.md) | [разбор](modules/04-oop-basics/CODE_REVIEW.md) |
 | 05 | [Наследование и полиморфизм](modules/05-inheritance/README.md) | virtual/abstract, интерфейсы, sealed | [теория](modules/05-inheritance/README.md) | [практика](modules/05-inheritance/PRACTICE.md) | [разбор](modules/05-inheritance/CODE_REVIEW.md) |
 | 06 | [Продвинутые типы](modules/06-advanced-types/README.md) | struct, enum, record, туплы, паттерн-матчинг | [теория](modules/06-advanced-types/README.md) | [практика](modules/06-advanced-types/PRACTICE.md) | [разбор](modules/06-advanced-types/CODE_REVIEW.md) |
+| 06.1 | [Строки: методы](modules/06_1-strings/README.md) | поиск, замена, Split, сравнение, форматирование | [теория](modules/06_1-strings/README.md) | [практика](modules/06_1-strings/PRACTICE.md) | [разбор](modules/06_1-strings/CODE_REVIEW.md) |
 | 07 | [Обобщения и коллекции](modules/07-generics-collections/README.md) | generics, List/Dictionary/HashSet, IEnumerable | [теория](modules/07-generics-collections/README.md) | [практика](modules/07-generics-collections/PRACTICE.md) | [разбор](modules/07-generics-collections/CODE_REVIEW.md) |
 | 08 | [Исключения](modules/08-exceptions/README.md) | try/catch/finally, свои исключения, using | [теория](modules/08-exceptions/README.md) | [практика](modules/08-exceptions/PRACTICE.md) | [разбор](modules/08-exceptions/CODE_REVIEW.md) |
 | 09 | [Делегаты, лямбды, события](modules/09-delegates-events/README.md) | delegate, Func/Action, event | [теория](modules/09-delegates-events/README.md) | [практика](modules/09-delegates-events/PRACTICE.md) | [разбор](modules/09-delegates-events/CODE_REVIEW.md) |
@@ -89,6 +90,8 @@ node web/sandbox-server.js
 | 19 | [Продвинутая архитектура](modules/19-architecture/README.md) | Clean Architecture, слои, Repository, CQRS | [теория](modules/19-architecture/README.md) | [практика](modules/19-architecture/PRACTICE.md) | [разбор](modules/19-architecture/CODE_REVIEW.md) |
 | 20 | [Наблюдаемость](modules/20-observability/README.md) | логирование, метрики, трейсинг, OpenTelemetry | [теория](modules/20-observability/README.md) | [практика](modules/20-observability/PRACTICE.md) | [разбор](modules/20-observability/CODE_REVIEW.md) |
 | 21 | [Безопасность веб-приложений](modules/21-security/README.md) | JWT, роли, секреты, OWASP Top 10 | [теория](modules/21-security/README.md) | [практика](modules/21-security/PRACTICE.md) | [разбор](modules/21-security/CODE_REVIEW.md) |
+| 22 | [Docker и деплой](modules/22-docker/README.md) | контейнеры, Dockerfile, compose, деплой | [теория](modules/22-docker/README.md) | [практика](modules/22-docker/PRACTICE.md) | [разбор](modules/22-docker/CODE_REVIEW.md) |
+| 23 | [Собеседование и повторение](modules/23-interview/README.md) | карта повторения, типичные вопросы | [теория](modules/23-interview/README.md) | [практика](modules/23-interview/PRACTICE.md) | [разбор](modules/23-interview/CODE_REVIEW.md) |
 
 ## 🏁 Итоговый проект
 

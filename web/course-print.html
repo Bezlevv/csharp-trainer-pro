@@ -9988,6 +9988,248 @@ else
 <p><code>TryGetValue</code> различает отсутствие ключа и реальное значение.</p>
 
 <div class="pagebreak"></div>
+<h1>Модуль 06.1: Строки и их методы (продолжение)</h1>
+<blockquote>
+<p><strong>Цель:</strong> уверенно работать со строками: поиск, замена, разбиение, сравнение, культура.</p>
+</blockquote>
+<h2>Зачем это нужно</h2>
+<p>Строки — самый часто используемый тип данных. Методы <code>string</code> решают 90% текстовых задач: разбор ввода, поиск, форматирование, валидация. Знание этих методов экономит часы работы.</p>
+<h2>Теория</h2>
+<h3>1. Строки неизменяемы (immutable)</h3>
+<p><code>string</code> нельзя изменить «на месте» — каждый метод возвращает <strong>новую</strong> строку, а оригинал остаётся. Это важно понимать, чтобы не «терять» результат:</p>
+<pre><code class="language-csharp">string s = &quot;Привет&quot;;
+s.ToUpper();          // строка НЕ изменилась! (результат брошен)
+Console.WriteLine(s); // Привет
+
+string up = s.ToUpper(); // теперь up == &quot;ПРИВЕТ&quot;
+</code></pre>
+<h3>2. Поиск и проверка</h3>
+<pre><code class="language-csharp">string s = &quot;C# — это круто&quot;;
+Console.WriteLine(s.Length);              // 14
+Console.WriteLine(s.Contains(&quot;круто&quot;));   // True
+Console.WriteLine(s.StartsWith(&quot;C#&quot;));    // True
+Console.WriteLine(s.EndsWith(&quot;!&quot;));       // False
+Console.WriteLine(s.IndexOf(&quot;круто&quot;));    // 8 (позиция)
+Console.WriteLine(s.IndexOf(&quot;zzz&quot;));      // -1 (не найдено)
+</code></pre>
+<h3>3. Вырезание и замена</h3>
+<pre><code class="language-csharp">Console.WriteLine(s.Substring(0, 2));     // &quot;C#&quot; — первые 2 символа
+Console.WriteLine(s.Replace(&quot;круто&quot;, &quot;сильно&quot;)); // &quot;C# — это сильно&quot;
+Console.WriteLine(s.Trim());              // убирает пробелы по краям
+Console.WriteLine(&quot;  a  &quot;.TrimStart());   // &quot;a  &quot;
+Console.WriteLine(&quot;  a  &quot;.TrimEnd());     // &quot;  a&quot;
+</code></pre>
+<h3>4. Разбиение и сборка</h3>
+<pre><code class="language-csharp">string csv = &quot;Иван;30;Москва&quot;;
+string[] parts = csv.Split(&#39;;&#39;);
+Console.WriteLine(parts[0]);   // Иван
+
+string joined = string.Join(&quot;, &quot;, parts);
+Console.WriteLine(joined);     // Иван, 30, Москва
+</code></pre>
+<h3>5. Сравнение строк</h3>
+<p><code>==</code> сравнивает по значению (для string это работает), но есть нюансы:</p>
+<pre><code class="language-csharp">Console.WriteLine(&quot;abc&quot; == &quot;abc&quot;);          // True
+Console.WriteLine(&quot;abc&quot; == &quot;ABC&quot;);          // False (регистр важен)
+
+Console.WriteLine(string.Equals(&quot;abc&quot;, &quot;ABC&quot;, StringComparison.OrdinalIgnoreCase)); // True
+Console.WriteLine(&quot;abc&quot;.Equals(&quot;ABC&quot;, StringComparison.OrdinalIgnoreCase));         // True
+</code></pre>
+<p>Для культуры-зависимых сравнений (русский текст) — <code>StringComparison.CurrentCulture</code>; для технических — <code>Ordinal</code>.</p>
+<h3>6. Пустые строки и null</h3>
+<pre><code class="language-csharp">Console.WriteLine(string.IsNullOrEmpty(&quot;&quot;));      // True
+Console.WriteLine(string.IsNullOrWhiteSpace(&quot;  &quot;)); // True
+</code></pre>
+<h3>7. Интерполяция и форматирование</h3>
+<pre><code class="language-csharp">string name = &quot;Иван&quot;;
+int age = 30;
+Console.WriteLine($&quot;{name} — {age} лет&quot;);
+
+Console.WriteLine($&quot;Цена: {1234.5:F2}&quot;);  // Цена: 1234,50
+Console.WriteLine($&quot;Число: {42:D5}&quot;);     // Число: 00042
+Console.WriteLine($&quot;{0.25:P0}&quot;);          // 25%
+</code></pre>
+<h2>Типичные ошибки</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Почему плохо</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>s.ToUpper()</code> без присваивания</td>
+<td>результат теряется</td>
+<td><code>s = s.ToUpper();</code></td>
+</tr>
+<tr>
+<td><code>Split(&quot; &quot;)</code> с несколькими пробелами</td>
+<td>пустые элементы</td>
+<td><code>Split(&#39; &#39;, StringSplitOptions.RemoveEmptyEntries)</code></td>
+</tr>
+<tr>
+<td><code>IndexOf</code> вернул −1, а мы берём Substring</td>
+<td>исключение</td>
+<td>проверяй результат &gt;= 0</td>
+</tr>
+<tr>
+<td>Сравнение <code>==</code> со строками из ввода</td>
+<td>регистр/невидимые символы</td>
+<td><code>Trim()</code> + <code>StringComparison</code></td>
+</tr>
+</tbody></table>
+<h2>Контрольные вопросы</h2>
+<ol>
+<li>Почему <code>s.ToUpper()</code> не меняет <code>s</code>?</li>
+<li>Что вернёт <code>IndexOf</code> при отсутствии подстроки?</li>
+<li>Как разбить строку по <code>;</code>?</li>
+<li>Чем <code>Equals(..., OrdinalIgnoreCase)</code> лучше <code>==</code> для ввода?</li>
+<li>Что вернёт <code>IsNullOrWhiteSpace(&quot;  &quot;)</code>?</li>
+</ol>
+<h2>Дальше</h2>
+<ul>
+<li><a href="PRACTICE.md">Практика</a> — задачи</li>
+<li><a href="CODE_REVIEW.md">Разбор кода</a> — типичные ошибки</li>
+</ul>
+
+<h1>Практика</h1>
+<h1>Практика — Модуль 06.1: Строки</h1>
+<blockquote>
+<p>Реши задачи сам, потом сверься с решениями в конце.</p>
+</blockquote>
+<h2>Задача 1: Валидация email</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Проверь, что строка похожа на email: содержит <code>@</code>, после <code>@</code> есть точка, длина &gt; 5.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Метод <code>bool LooksLikeEmail(string s)</code>.</li>
+<li><code>Contains(&quot;@&quot;</code>, <code>IndexOf(&#39;.&#39;)</code> после <code>@</code>.</li>
+</ul>
+<h2>Задача 2: Обратный порядок слов</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Дана строка слов. Выведи слова в обратном порядке.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>Split(&#39; &#39;)</code> → <code>Array.Reverse</code> → <code>string.Join</code>.</li>
+</ul>
+<h2>Задача 3: Палиндром (с очисткой)</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Проверь, палиндром ли фраза (без учёта регистра, пробелов и знаков).</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Очисти: <code>ToLower()</code>, убери пробелы и знаки препинания.</li>
+<li>Сравни с развёрнутой версией.</li>
+</ul>
+<h2>Задача 4: Подсчёт слов</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Посчитай количество слов в строке.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>Split(&#39; &#39;, StringSplitOptions.RemoveEmptyEntries).Length</code>.</li>
+</ul>
+<h2>Задача 5: Акроним</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Из строки «объектно-ориентированное программирование» сделай «ООП».</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Разбей по словам, возьми первую букву каждого, <code>ToUpper()</code>.</li>
+</ul>
+<h2>Задача 6: Сжатие пробелов</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Замени серии пробелов на один.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Через разбиение с <code>RemoveEmptyEntries</code> + <code>string.Join(&quot; &quot;, ...)</code>.</li>
+</ul>
+<h2>Решения</h2>
+<details>
+<summary>Задача 1 — решение</summary>
+
+<pre><code class="language-csharp">bool LooksLikeEmail(string s)
+{
+    if (string.IsNullOrWhiteSpace(s)) return false;
+    int at = s.IndexOf(&#39;@&#39;);
+    return at &gt; 0 &amp;&amp; s.IndexOf(&#39;.&#39;, at) &gt; at + 1;
+}
+</code></pre>
+<p><strong>Пояснение:</strong> <code>@</code> есть, перед ним что-то есть, после него — точка дальше.</p>
+</details>
+
+<details>
+<summary>Задача 2 — решение</summary>
+
+<pre><code class="language-csharp">string ReverseWords(string s)
+{
+    string[] words = s.Split(&#39; &#39;, StringSplitOptions.RemoveEmptyEntries);
+    Array.Reverse(words);
+    return string.Join(&quot; &quot;, words);
+}
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 3 — решение</summary>
+
+<pre><code class="language-csharp">bool IsPalindrome(string s)
+{
+    var cleaned = new string(s.ToLower().Where(char.IsLetterOrDigit).ToArray());
+    char[] arr = cleaned.ToCharArray();
+    Array.Reverse(arr);
+    return cleaned == new string(arr);
+}
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 4 — решение</summary>
+
+<pre><code class="language-csharp">int CountWords(string s) =&gt;
+    s.Split(&#39; &#39;, StringSplitOptions.RemoveEmptyEntries).Length;
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 5 — решение</summary>
+
+<pre><code class="language-csharp">string Acronym(string phrase) =&gt;
+    string.Concat(phrase.Split(&#39; &#39;, StringSplitOptions.RemoveEmptyEntries)
+        .Select(w =&gt; w[0].ToString().ToUpper()));
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 6 — решение</summary>
+
+<pre><code class="language-csharp">string CollapseSpaces(string s) =&gt;
+    string.Join(&quot; &quot;, s.Split(&#39; &#39;, StringSplitOptions.RemoveEmptyEntries));
+</code></pre>
+</details>
+
+<h1>Разбор кода</h1>
+<h1>Разбор кода — Модуль 06.1: Строки</h1>
+<h2>Пример 1: Потерянный результат</h2>
+<pre><code class="language-csharp">string s = &quot;Привет&quot;;
+s.ToUpper();          // результат брошен!
+Console.WriteLine(s); // Привет — не изменилась
+</code></pre>
+<p><strong>Проблема:</strong> строки неизменяемы; <code>ToUpper()</code> возвращает новую, а мы её не сохранили.<br><strong>Как надо:</strong> <code>s = s.ToUpper();</code></p>
+<h2>Пример 2: Split с пустыми элементами</h2>
+<pre><code class="language-csharp">&quot;a  b&quot;.Split(&#39; &#39;);   // [&quot;a&quot;, &quot;&quot;, &quot;&quot;, &quot;b&quot;]
+</code></pre>
+<p><strong>Проблема:</strong> несколько пробелов → пустые элементы.<br><strong>Как надо:</strong> <code>Split(&#39; &#39;, StringSplitOptions.RemoveEmptyEntries)</code> → <code>[&quot;a&quot;, &quot;b&quot;]</code>.</p>
+<h2>Пример 3: IndexOf == -1</h2>
+<pre><code class="language-csharp">string s = &quot;abc&quot;;
+Console.WriteLine(s.Substring(s.IndexOf(&quot;zzz&quot;))); // IndexOutOfRangeException
+</code></pre>
+<p><strong>Проблема:</strong> <code>IndexOf</code> вернул −1 → <code>Substring(-1)</code> падает.<br><strong>Как надо:</strong> проверяй <code>int idx = s.IndexOf(&quot;zzz&quot;); if (idx &gt;= 0) ...</code></p>
+<h2>Пример 4: Регистр в сравнениях</h2>
+<pre><code class="language-csharp">if (input == &quot;yes&quot;) { ... }  // &quot;Yes&quot; не пройдёт
+</code></pre>
+<p><strong>Как надо:</strong> <code>if (input.Trim().Equals(&quot;yes&quot;, StringComparison.OrdinalIgnoreCase))</code></p>
+<h2>Пример 5: Конкатенация в цикле</h2>
+<pre><code class="language-csharp">string s = &quot;&quot;;
+for (int i = 0; i &lt; 10000; i++) s += i;   // медленно
+</code></pre>
+<p><strong>Как надо:</strong> <code>StringBuilder</code> или <code>string.Join</code>.</p>
+<h2>Вывод</h2>
+<p>Строки неизменяемы → всегда сохраняй результат. Используй <code>StringSplitOptions.RemoveEmptyEntries</code>, проверяй <code>IndexOf</code>, и сравнивай с учётом регистра осознанно.</p>
+
+<div class="pagebreak"></div>
 <h1>Модуль 07: Обобщения и коллекции</h1>
 <blockquote>
 <p><strong>Цель:</strong> уверенно выбирать и использовать коллекции, понимать обобщения и их ограничения.</p>
@@ -15945,5 +16187,460 @@ db.Users.Add(new User { PasswordHash = hasher.HashPassword(null!, rawPassword) }
 <p>Валидируй формат, длину, тип на границе API.</p>
 <h3>Вывод</h3>
 <p>Любой ввод — потенциально опасен.</p>
+
+<div class="pagebreak"></div>
+<h1>Модуль 22: Docker и деплой .NET-приложений</h1>
+<blockquote>
+<p><strong>Цель:</strong> упаковать .NET-приложение в контейнер и понять, как оно деплоится.</p>
+</blockquote>
+<h2>Зачем это нужно</h2>
+<p>Docker — стандарт доставки приложений. Контейнер «упаковывает» код + окружение, и приложение одинаково работает на любой машине. Для senior-уровня это обязательный навык.</p>
+<h2>Теория</h2>
+<h3>1. Что такое контейнер</h3>
+<p>Контейнер — изолированный процесс с <strong>собственным окружением</strong> (файлы, переменные, зависимости). В отличие от виртуальной машины, он использует ядро хоста и потому лёгкий и быстрый.</p>
+<h3>2. Образ (image) и контейнер (container)</h3>
+<ul>
+<li>Образ — «шаблон» (как класс). Собирается из <code>Dockerfile</code>.</li>
+<li>Контейнер — запущенный экземпляр образа (как объект).</li>
+</ul>
+<h3>3. Dockerfile для .NET</h3>
+<pre><code class="language-dockerfile"># этап 1: сборка
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet publish src/TaskApi/TaskApi.csproj -c Release -o /app
+
+# этап 2: рантайм (меньше)
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+WORKDIR /app
+COPY --from=build /app .
+EXPOSE 8080
+ENTRYPOINT [&quot;dotnet&quot;, &quot;TaskApi.dll&quot;]
+</code></pre>
+<p>Многоступенчатая сборка: SDK нужен только для компиляции, в образе — только рантайм (меньше и безопаснее).</p>
+<h3>4. Основные команды</h3>
+<pre><code class="language-bash">docker build -t my-api .          # собрать образ
+docker run -p 8080:8080 my-api    # запустить контейнер
+docker ps                         # список работающих контейнеров
+docker stop &lt;id&gt;                  # остановить
+docker compose up                 # поднять всё из docker-compose.yml
+</code></pre>
+<h3>5. docker-compose.yml</h3>
+<p>Для нескольких сервисов (API + БД):</p>
+<pre><code class="language-yaml">services:
+  api:
+    build: .
+    ports: [&quot;8080:8080&quot;]
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: secret
+</code></pre>
+<h3>6. Переменные окружения в контейнере</h3>
+<p>Секреты и конфигурацию передают не в образ, а при запуске:</p>
+<pre><code class="language-bash">docker run -e &quot;JWT_SECRET=...&quot; -e &quot;DB_CONNECTION=...&quot; my-api
+</code></pre>
+<h3>7. Публикация образа</h3>
+<pre><code class="language-bash">docker tag my-api myuser/my-api:latest
+docker push myuser/my-api:latest   # на Docker Hub
+</code></pre>
+<h2>Типичные ошибки</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Почему плохо</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Копировать весь SDK в образ</td>
+<td>образ огромный</td>
+<td>многоступенчатая сборка</td>
+</tr>
+<tr>
+<td>Хардкодить секреты в Dockerfile</td>
+<td>утечка</td>
+<td><code>-e</code> / переменные окружения</td>
+</tr>
+<tr>
+<td>Не указывать <code>EXPOSE</code></td>
+<td>порт не виден</td>
+<td><code>EXPOSE 8080</code></td>
+</tr>
+<tr>
+<td>Кэш не используется</td>
+<td>каждая сборка с нуля</td>
+<td>порядок COPY: сначала зависимости</td>
+</tr>
+</tbody></table>
+<h2>Контрольные вопросы</h2>
+<ol>
+<li>Чем контейнер отличается от ВМ?</li>
+<li>Что такое Dockerfile?</li>
+<li>Зачем многоступенчатая сборка?</li>
+<li>Как передать секрет в контейнер?</li>
+<li>Что делает <code>docker compose up</code>?</li>
+</ol>
+<h2>Дальше</h2>
+<ul>
+<li><a href="PRACTICE.md">Практика</a></li>
+<li><a href="CODE_REVIEW.md">Разбор кода</a></li>
+</ul>
+
+<h1>Практика</h1>
+<h1>Практика — Модуль 22: Docker</h1>
+<h2>Задача 1: Простой Dockerfile</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Напиши Dockerfile для консольного .NET-приложения.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Двухступенчатый: <code>sdk</code> → build, <code>aspnet</code> (или <code>runtime</code>) → run.</li>
+<li><code>ENTRYPOINT</code> на скомпилированную DLL.</li>
+</ul>
+<h2>Задача 2: Запуск</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Собери образ и запусти контейнер.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>docker build -t myapp .</code></li>
+<li><code>docker run myapp</code></li>
+</ul>
+<h2>Задача 3: Порт</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Запусти веб-API с пробросом порта.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>docker run -p 8080:8080 my-api</code></li>
+<li>Проверь <code>curl http://localhost:8080/health</code></li>
+</ul>
+<h2>Задача 4: Переменные окружения</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Передай <code>JWT_SECRET</code> при запуске.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li><code>docker run -e &quot;JWT_SECRET=super-secret&quot; ...</code></li>
+</ul>
+<h2>Задача 5: docker-compose</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Опиши <code>docker-compose.yml</code> с API и PostgreSQL.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Сервисы <code>api</code> и <code>db</code>.</li>
+<li>Порты и переменные окружения.</li>
+</ul>
+<h2>Решения</h2>
+<details>
+<summary>Задача 1 — решение</summary>
+
+<pre><code class="language-dockerfile">FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY . .
+RUN dotnet publish src/MyApp/MyApp.csproj -c Release -o /app
+
+FROM mcr.microsoft.com/dotnet/runtime:8.0
+WORKDIR /app
+COPY --from=build /app .
+ENTRYPOINT [&quot;dotnet&quot;, &quot;MyApp.dll&quot;]
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 2 — решение</summary>
+
+<pre><code class="language-bash">docker build -t myapp .
+docker run myapp
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 3 — решение</summary>
+
+<pre><code class="language-bash">docker run -p 8080:8080 my-api
+curl http://localhost:8080/health
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 4 — решение</summary>
+
+<pre><code class="language-bash">docker run -e &quot;JWT_SECRET=super-secret&quot; my-api
+</code></pre>
+</details>
+
+<details>
+<summary>Задача 5 — решение</summary>
+
+<pre><code class="language-yaml">services:
+  api:
+    build: .
+    ports: [&quot;8080:8080&quot;]
+    environment:
+      JWT_SECRET: super-secret
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: secret
+</code></pre>
+</details>
+
+<h1>Разбор кода</h1>
+<h1>Разбор кода — Модуль 22: Docker</h1>
+<h2>Пример 1: Огромный образ</h2>
+<pre><code class="language-dockerfile">FROM mcr.microsoft.com/dotnet/sdk:8.0
+COPY . .
+RUN dotnet publish -c Release -o /app
+ENTRYPOINT [&quot;dotnet&quot;, &quot;/app/TaskApi.dll&quot;]
+</code></pre>
+<p><strong>Проблема:</strong> SDK-образ весит гигабайты — в боевом образе он не нужен.<br><strong>Как надо:</strong> многоступенчатая сборка: <code>sdk</code> для сборки, <code>aspnet/runtime</code> для запуска.</p>
+<h2>Пример 2: Секреты в Dockerfile</h2>
+<pre><code class="language-dockerfile">ENV JWT_SECRET=hardcoded-secret
+</code></pre>
+<p><strong>Проблема:</strong> секрет попадёт в образ и историю.<br><strong>Как надо:</strong> передавать при запуске: <code>docker run -e &quot;JWT_SECRET=...&quot;</code>.</p>
+<h2>Пример 3: Забыли EXPOSE</h2>
+<p><strong>Проблема:</strong> <code>-p 8080:8080</code> не пробросит порт, если он не задекларирован.<br><strong>Как надо:</strong> указать <code>EXPOSE 8080</code> в Dockerfile.</p>
+<h2>Пример 4: Порядок COPY и кэш</h2>
+<pre><code class="language-dockerfile">COPY . .
+COPY src/MyApp/*.csproj .
+RUN dotnet restore
+</code></pre>
+<p><strong>Проблема:</strong> копируем всё до restore → кэш не работает, restore на каждом билде.<br><strong>Как надо:</strong> сначала скопировать <code>.csproj</code>, сделать restore, потом остальное — кэш слоёв работает.</p>
+<h2>Вывод</h2>
+<p>Docker — про небольшие образы (многоступенчатость), безопасность (секреты вне образа) и правильный порядок для кэша.</p>
+
+<div class="pagebreak"></div>
+<h1>Модуль 23: Подготовка к собеседованию и повторение</h1>
+<blockquote>
+<p><strong>Цель:</strong> систематизировать знания, повторить ключевые темы и потренироваться в типичных вопросах.</p>
+</blockquote>
+<h2>Зачем это нужно</h2>
+<p>После курса полезно «собрать» знания воедино и отрепетировать собеседование. Это поможет уверенно отвечать и выявить пробелы.</p>
+<h2>Теория</h2>
+<h3>1. Карта повторения (что спросят)</h3>
+<table>
+<thead>
+<tr>
+<th>Область</th>
+<th>Ключевые вопросы</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Базовый синтаксис</td>
+<td>типы, var, null, строки, операторы</td>
+</tr>
+<tr>
+<td>ООП</td>
+<td>классы, инкапсуляция, наследование, полиморфизм, интерфейсы</td>
+</tr>
+<tr>
+<td>Коллекции</td>
+<td>List, Dictionary, HashSet, сложности O(...)</td>
+</tr>
+<tr>
+<td>Исключения</td>
+<td>try/catch, свои исключения, throw vs rethrow</td>
+</tr>
+<tr>
+<td>LINQ</td>
+<td>Where/Select/OrderBy, отложенное выполнение</td>
+</tr>
+<tr>
+<td>Асинхронность</td>
+<td>async/await, Task.WhenAll, CancellationToken</td>
+</tr>
+<tr>
+<td>Тесты</td>
+<td>xUnit, AAA, моки</td>
+</tr>
+<tr>
+<td>SOLID</td>
+<td>5 принципов, примеры</td>
+</tr>
+<tr>
+<td>ASP.NET Core</td>
+<td>minimal API, DI, middleware, JWT</td>
+</tr>
+</tbody></table>
+<h3>2. Как отвечать</h3>
+<ul>
+<li>Сначала — суть (1–2 фразы).</li>
+<li>Потом — пример.</li>
+<li>Затем — «почему это важно / когда использовать».</li>
+</ul>
+<h3>3. Типичные вопросы</h3>
+<ol>
+<li>В чём разница <code>class</code> и <code>struct</code>?</li>
+<li>Чем <code>abstract class</code> отличается от <code>interface</code>?</li>
+<li>Что такое отложенное выполнение LINQ?</li>
+<li>Зачем <code>async/await</code>, а не <code>.Result</code>?</li>
+<li>Что такое DI и зачем она?</li>
+<li>Что такое <code>IDisposable</code> и <code>using</code>?</li>
+<li>Чем <code>==</code> отличается от <code>.Equals()</code>?</li>
+<li>Что такое <code>StringBuilder</code> и когда он нужен?</li>
+<li>Что означает «ссылочный тип» и «тип значения»?</li>
+<li>Как бы ты спроектировал небольшой сервис?</li>
+</ol>
+<h3>4. Мини-шпаргалка</h3>
+<pre><code class="language-csharp">// тип значения vs ссылочный
+int a = 5;       // значение, копируется
+string s = &quot;x&quot;;  // ссылка, в стеке ссылка на объект в куче
+
+// Null-безопасность
+string? maybe = null;
+int len = maybe?.Length ?? 0;
+
+// интерфейс vs абстрактный класс
+interface IShape { double Area(); }
+abstract class Shape { public abstract double Area(); }
+</code></pre>
+<h2>Типичные ошибки на собеседовании</h2>
+<table>
+<thead>
+<tr>
+<th>Ошибка</th>
+<th>Как правильно</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Учить наизусть определения</td>
+<td>понимать и объяснять своими словами</td>
+</tr>
+<tr>
+<td>Не знать сложность коллекций</td>
+<td>запомнить O(1)/O(n)</td>
+</tr>
+<tr>
+<td>Путать <code>abstract class</code> и <code>interface</code></td>
+<td>таблица отличий</td>
+</tr>
+<tr>
+<td>Не уметь объяснить SOLID на примере</td>
+<td>подготовь примеры</td>
+</tr>
+</tbody></table>
+<h2>Контрольные вопросы</h2>
+<ol>
+<li>Объясни полиморфизм своими словами.</li>
+<li>Когда выбрать <code>struct</code>, когда <code>class</code>?</li>
+<li>Что такое «отложенное выполнение»?</li>
+<li>Зачем <code>CancellationToken</code>?</li>
+<li>Что даёт DI?</li>
+</ol>
+<h2>Дальше</h2>
+<ul>
+<li><a href="PRACTICE.md">Практика</a> — вопросы-тренажёр</li>
+<li><a href="CODE_REVIEW.md">Разбор кода</a> — разбор ответов</li>
+</ul>
+
+<h1>Практика</h1>
+<h1>Практика — Модуль 23: Собеседование</h1>
+<h2>Задача 1: Ответь своими словами</h2>
+<p><strong>Сложность:</strong> ★☆☆<br><strong>Описание:</strong> Объясни вслух (или запиши), что такое полиморфизм.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Приведи пример с <code>Animal</code> / <code>Dog</code>.</li>
+</ul>
+<h2>Задача 2: class vs struct</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Объясни разницу и когда что выбирать.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Тип значения vs ссылочный.</li>
+<li>Пример: <code>struct</code> для мелких immutable-сущностей.</li>
+</ul>
+<h2>Задача 3: abstract class vs interface</h2>
+<p><strong>Сложность:</strong> ★★☆<br><strong>Описание:</strong> Составь таблицу отличий.</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Наследование: 1 vs много.</li>
+<li>Данные/поля, конструкторы.</li>
+</ul>
+<h2>Задача 4: Опиши сервис</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Спроектируй на словах мини-сервис (заказы).</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Слои, интерфейсы, DI, хранилище, тесты.</li>
+</ul>
+<h2>Задача 5: Разбор типичного кода</h2>
+<p><strong>Сложность:</strong> ★★★<br><strong>Описание:</strong> Найди ошибки:</p>
+<pre><code class="language-csharp">int sum = 0;
+for (int i = 0; i &lt; 10; i++) { sum += numbers[i]; }
+</code></pre>
+<p>(если numbers короче 10 — исключение).</p>
+<p><strong>Требования:</strong></p>
+<ul>
+<li>Предложи безопасный вариант (<code>Fixed</code>/проверка длины).</li>
+</ul>
+<h2>Решения</h2>
+<details>
+<summary>Задача 1 — решение</summary>
+
+<blockquote>
+<p>Полиморфизм — способность одного кода работать с разными типами через общий базовый тип. Например, <code>Animal a = new Dog(); a.Speak();</code> вызовет <code>Dog.Speak()</code>, потому что метод виртуальный и переопределён. Это позволяет добавлять новые типы без правки старого кода (OCP).</p>
+</blockquote>
+</details>
+
+<details>
+<summary>Задача 2 — решение</summary>
+
+<ul>
+<li><code>struct</code> — тип значения: копируется при присваивании, хранится обычно на стеке. Подходит для мелких, неизменяемых сущностей (Point, Money).</li>
+<li><code>class</code> — ссылочный тип: переменная хранит ссылку. Подходит для остального; наследование и изменение.</details></li>
+</ul>
+<details>
+<summary>Задача 3 — решение</summary>
+
+<table>
+<thead>
+<tr>
+<th>Признак</th>
+<th>abstract class</th>
+<th>interface</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Наследование</td>
+<td>одно</td>
+<td>много</td>
+</tr>
+<tr>
+<td>Состояние/поля</td>
+<td>да</td>
+<td>нет</td>
+</tr>
+<tr>
+<td>Конструктор</td>
+<td>да</td>
+<td>нет</td>
+</tr>
+<tr>
+<td>Когда</td>
+<td>общая логика + IS-A</td>
+<td>контракт, CAN-DO</td>
+</tr>
+</tbody></table>
+</details>
+
+<details>
+<summary>Задача 4 — решение</summary>
+
+<p>Слои: Domain (Order, IOrderRepository) → Application (OrderService с DI) → Infrastructure (EF/файл) → Presentation (API). Тесты: фейк-репозиторий. Зависимости внутрь.</p>
+</details>
+
+<details>
+<summary>Задача 5 — решение</summary>
+
+<p>Ошибка: выход за границы, если <code>numbers.Length &lt; 10</code>.<br>Безопасно: <code>sum += numbers[i];</code> в цикле до <code>numbers.Length</code>, или <code>foreach</code>. Либо проверять длину.</p>
+</details>
+
+<h1>Разбор кода</h1>
+<h1>Разбор кода — Модуль 23: Собеседование</h1>
+<h2>Пример 1: Слабый ответ про полиморфизм</h2>
+<p>«Это когда один класс наследует другой.» — слишком узко и неточно.</p>
+<p><strong>Как отвечать:</strong> «Полиморфизм — возможность одного и того же вызова вести себя по-разному для разных фактических типов. Например, виртуальный метод <code>Speak()</code> в базовом классе переопределяется наследниками; вызов через ссылку базового типа вызывает переопределённую версию. Это даёт расширяемость — новое поведение добавляется новым классом, без правки старого.»</p>
+<h2>Пример 2: Путаница abstract class и interface</h2>
+<p>Сказать «это почти одно и то же» — плохо.</p>
+<p><strong>Как отвечать:</strong> отличия: интерфейс — только контракт (без состояния), можно реализовать много; абстрактный класс может содержать реализацию и поля, но наследование — одно. Интерфейс — про «что умеет», абстрактный класс — про «что это такое».</p>
+<h2>Пример 3: Незнание сложности коллекций</h2>
+<p>Не знать, что <code>List.Contains</code> — O(n), а <code>Dictionary</code> — O(1) — красный флаг.</p>
+<p><strong>Как запомнить:</strong> массив/List ищут перебором (O(n)); Dictionary/HashSet используют хэш (O(1)); отсортированные — O(log n).</p>
+<h2>Пример 4: «Я всё держу в Program.cs»</h2>
+<p>Плохо. <strong>Как отвечать:</strong> разделять на слои, использовать DI, тестировать.</p>
+<h2>Вывод</h2>
+<p>Собеседование проверяет понимание, а не зубрёжку. Умей объяснять на примерах и «почему».</p>
 
 </body></html>
